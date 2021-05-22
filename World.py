@@ -83,16 +83,17 @@ class World(object):
 
     def showResults(self):
 
-        print("|||||||||| Results ||||||||||")
+        print(" |||||||||| Results ||||||||||")
 
         length = len(self.graphS)
         print("  N:                      ", self.n)
         print("  F:                      ", self.F)
         print("  Di:                     ", self.Di)
         print("  Initial Energies:       ", self.initEnergies)
+        print("  Death Limit:            ", self.DEATH_LIMIT)
         print("  Final Energies:         ", self.S[self.F])
         print("  Total number of frames: ", length)
-        print("  Number of frames of F:  ", length / self.F )
+        print("  Optimization events:    ", length / self.F )
 
         fig, ax = plt.subplots(3)
         ax[0].plot(self.graphS)
@@ -114,7 +115,7 @@ class World(object):
         plt.ylim(0, self.HEIGHT)
         ax.plot(self.station[0], self.station[1], marker="o", c='b', markersize=8, linestyle='dashed')
         self.sc, = ax.plot(self.x, self.y, marker="o", ls="", c='#72ca00', markersize=5) # set linestyle to none
-        self.time_text = ax.text(0.02, 0.95, 'f = {:d}'.format(4), transform=ax.transAxes)
+        # self.time_text = ax.text(0.02, 0.95, 'f = {:d}'.format(4), transform=ax.transAxes)
 
         # Initial Annotations -----------------------------------------------------------------
         if (self.show_annotations):

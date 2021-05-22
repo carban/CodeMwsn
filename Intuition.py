@@ -29,7 +29,7 @@ for f in range(F):
     C[f] = (S[f]-S[f+1])/X_bef[f]
 
 for f in range(F):
-	solution = model(N, Di, Bi, Ci[i])
+	solution = model(N, Di, Bi, Ci[f])
 	MX.add(solution.x)
 	Bi = solution.Bi
 

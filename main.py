@@ -2,9 +2,9 @@ from World import World
 
 def main():
 
-    n = 3
+    n = 10
     F = 5
-    Di = n * 3
+    Di = 30
 
     WIDTH = 100
     HEIGHT = 100
@@ -20,7 +20,7 @@ def main():
     sleepInterval = 25
 
     initEnergies = [100 for i in range(n)]
-    # initEnergies = [100, 91, 83]
+    # initEnergies = [83, 91, 100]
 
     w = World(
         n, F, Di, 
