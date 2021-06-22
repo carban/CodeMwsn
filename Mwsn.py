@@ -98,16 +98,16 @@ class Mwsn:
             # Amount of time slots computed -----------------------------------------------   
             self.X = self.X.reshape(self.F, self.N)
             self.X_bef = self.X
-            os.system('clear')
+            # os.system('clear')
             # print("X", self.X)
             # print("bi", self.bi)
             # print("ci", self.ci)
             # print("cf", self.cf)
 
             # print("------------------------------------------------------------------------------------------")
-            formatedX = self.formatAssignment(self.X)
-            for j in range(self.F):
-                print(j, formatedX[j])
+            # formatedX = self.formatAssignment(self.X)
+            # for j in range(self.F):
+            #     print(j, formatedX[j])
 
             #     *** SEND SCHEDULE ***          SendTimeFrequencyToAllNodes()           *** SEND SCHEDULE ***
             return self.X

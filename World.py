@@ -206,7 +206,7 @@ class World(object):
 
             # # SENDING RESIDUAL ENERGIES TO THE MAIN PROGRAM ************
             # print("REAL COSTS PACKET", costs_packet)
-            # print("S", self.S)
+            print("S", self.S)
 
             self.obj.setS(self.S)
             self.obj.setBi(self.S[F].tolist())
@@ -215,7 +215,7 @@ class World(object):
             # MX = np.ones((self.F, self.n))
             # self.MX = MX * (self.Di / self.n)
 
-            # print("X", self.MX)
+            print("X", self.MX)
 
             # Save values for results ----------------------
             for i in range(F):

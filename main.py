@@ -1,10 +1,10 @@
 from World import World
 
 def main():
-
-    n = 10
+    # n = 15 Di = 35
+    n = 15
     F = 5
-    Di = 30
+    Di = 35 
 
     WIDTH = 100
     HEIGHT = 100
