@@ -125,6 +125,27 @@ class World(object):
 
         plt.show()
 
+    def pl_seamcat(self, d):
+        # d is in km
+        f = 5e3
+        return 32.44 + 10*math.log(d,10)+20*math.log(f, 10)
+
+    def db_to_mw(self, db):
+        return 10.0**(db/10.0)
+
+    def mw_to_w(self, mw):
+        return mw / 1000
+
+    def power_cost(self, d):
+        # d in Km
+        Po = 23
+        Go = 2
+        Gi = 2
+        Pr = -71
+        Pl = self.pl_seamcat(d)
+        Po = Pr + Pl - Go - Gi
+        return self.mw_to_w(self.db_to_mw(Po))
+
     def animate(self, f, data):
 
         f = self.counter
@@ -170,9 +191,10 @@ class World(object):
             
             # update distances and costs
             self.distances[i] = math.sqrt((x[i]-self.station[0])**2 + (y[i]-self.station[1])**2)
-            self.costs[i] = self.distances[i] / self.norm # max distance in map
+            self.costs[i] = self.power_cost(self.distances[i] / 1000)
+            # self.costs[i] = self.distances[i] / self.norm # max distance in map
             # self.costs[i] = self.costFunction(self.distances[i] / self.norm) / 10
-            # print(self.distances[i], self.costs[i]) 
+            print(self.distances[i], self.costs[i]) 
 
             # update target
             if ((self.tar_x[i] - x[i] >= -1 and self.tar_x[i] - x[i] <= 1) or 
@@ -206,7 +228,7 @@ class World(object):
 
             # # SENDING RESIDUAL ENERGIES TO THE MAIN PROGRAM ************
             # print("REAL COSTS PACKET", costs_packet)
-            print("S", self.S)
+            # print("S", self.S)
 
             self.obj.setS(self.S)
             self.obj.setBi(self.S[F].tolist())
@@ -215,7 +237,7 @@ class World(object):
             # MX = np.ones((self.F, self.n))
             # self.MX = MX * (self.Di / self.n)
 
-            print("X", self.MX)
+            # print("X", self.MX)
 
             # Save values for results ----------------------
             for i in range(F):

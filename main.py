@@ -2,9 +2,9 @@ from World import World
 
 def main():
     # n = 15 Di = 35
-    n = 15
+    n = 3
     F = 5
-    Di = 35 
+    Di = 9 
 
     WIDTH = 100
     HEIGHT = 100
