@@ -125,10 +125,8 @@ class World(object):
 
         plt.show()
 
-    def pl_seamcat(self, d):
-        # d is in km
-        f = 5e3
-        return 32.44 + 10*math.log(d,10)+20*math.log(f, 10)
+    def pl_dbm(self, d, f):
+        return 20.0*math.log(d, 10)+20.0*math.log(f, 10)+32.44
 
     def db_to_mw(self, db):
         return 10.0**(db/10.0)
@@ -138,12 +136,14 @@ class World(object):
 
     def power_cost(self, d):
         # d in Km
+        f = 5e3 #MHz
         Po = 23
         Go = 2
         Gi = 2
         Pr = -71
-        Pl = self.pl_seamcat(d)
+        Pl = self.pl_dbm(d, f)
         Po = Pr + Pl - Go - Gi
+
         return self.mw_to_w(self.db_to_mw(Po))
 
     def animate(self, f, data):
@@ -191,10 +191,10 @@ class World(object):
             
             # update distances and costs
             self.distances[i] = math.sqrt((x[i]-self.station[0])**2 + (y[i]-self.station[1])**2)
-            self.costs[i] = self.power_cost(self.distances[i] / 1000)
+            self.costs[i] = self.power_cost(self.distances[i] / 1000)*3
             # self.costs[i] = self.distances[i] / self.norm # max distance in map
             # self.costs[i] = self.costFunction(self.distances[i] / self.norm) / 10
-            print(self.distances[i], self.costs[i]) 
+            # print("i->", i, self.distances[i] / 1000, self.costs[i]) 
 
             # update target
             if ((self.tar_x[i] - x[i] >= -1 and self.tar_x[i] - x[i] <= 1) or 
