@@ -2,9 +2,9 @@ from World import World
 
 def main():
     # n = 15 Di = 35
-    n = 10
+    n = 4
     F = 5
-    Di = 30 
+    Di = 12 
 
     WIDTH = 100
     HEIGHT = 100
@@ -13,13 +13,13 @@ def main():
     MIN_SPEED = 0.2
 
     LOW_VALUE = 0.01
-    DEATH_LIMIT = 5
+    DEATH_LIMIT = 99.8
         
     show_annotations = False
 
     sleepInterval = 25
 
-    initEnergies = [100 for i in range(n)]
+    initEnergies = [19 for i in range(n)]
     # initEnergies = [83, 91, 100]
 
     w = World(

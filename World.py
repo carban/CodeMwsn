@@ -38,7 +38,7 @@ class World(object):
 
         self.counter = 0
 
-        self.costFunction = lambda x: math.e**(x-1) 
+        self.ms_val = 3.6111e-5    
 
         # ####################################################
 
@@ -78,7 +78,7 @@ class World(object):
         self.S = initS
 
         # Initial MWSNs model -----------------------------------------------------------------
-        self.obj = Mwsn(1, F, n, Di, [], [])
+        self.obj = Mwsn(1, F, n, Di, [], [], self.ms_val)
         self.ani = {}
 
     def showResults(self):
@@ -128,7 +128,7 @@ class World(object):
     def pl_dbm(self, d, f):
         return 20.0*math.log(d, 10)+20.0*math.log(f, 10)+32.44
 
-    def db_to_mw(self, db):
+    def dbm_to_mw(self, db):
         return 10.0**(db/10.0)
 
     def mw_to_w(self, mw):
@@ -144,7 +144,7 @@ class World(object):
         Pl = self.pl_dbm(d, f)
         Po = Pr + Pl - Go - Gi
 
-        return self.mw_to_w(self.db_to_mw(Po))
+        return self.mw_to_w(self.dbm_to_mw(Po))
 
     def animate(self, f, data):
 
@@ -191,10 +191,10 @@ class World(object):
             
             # update distances and costs
             self.distances[i] = math.sqrt((x[i]-self.station[0])**2 + (y[i]-self.station[1])**2)
-            self.costs[i] = self.power_cost(self.distances[i] / 1000)*3
+            self.costs[i] = self.power_cost((self.distances[i]*3) / 1000)
             # self.costs[i] = self.distances[i] / self.norm # max distance in map
             # self.costs[i] = self.costFunction(self.distances[i] / self.norm) / 10
-            # print("i->", i, self.distances[i] / 1000, self.costs[i]) 
+            print("i->", i, self.costs[i]) 
 
             # update target
             if ((self.tar_x[i] - x[i] >= -1 and self.tar_x[i] - x[i] <= 1) or 
@@ -212,13 +212,16 @@ class World(object):
         self.sc.set_data(x, y)
 
         # send costs to solver method *************************************
-        # print("COSTS", f, costs)
-        self.S[f+1] = self.S[f]-(self.costs*self.MX[f]) # self.S[f]-(self.costs*self.MX[f]) / Di
+        self.S[f+1] = self.S[f]-(self.costs*self.MX[f]*self.ms_val)  # self.S[f]-(self.costs*self.MX[f]) / Di
         self.costs_packet[f] = self.costs
 
         # Check Umbral ----------------------
         for i in range(n):
-            if (self.S[self.F][i] > 1 and self.S[self.F][i] < self.DEATH_LIMIT):
+
+            percent = (self.S[self.F][i]*100)/19
+            # print("====>", percent)
+
+            if (percent > 6 and percent < self.DEATH_LIMIT):
                 self.ani.event_source.stop()
                 self.isDeath = True
                 self.showResults()
@@ -241,8 +244,11 @@ class World(object):
 
             # Save values for results ----------------------
             for i in range(F):
+
+                percent = (self.S[i+1]*100)/19
+
+                self.graphS.append(percent.tolist())
                 self.graphX.append(self.MX[i].tolist())
-                self.graphS.append(self.S[i+1].tolist())
                 self.graphC.append(self.costs_packet[i].tolist())
             
             self.S[0] = self.S[F]
