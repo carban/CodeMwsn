@@ -194,7 +194,7 @@ class World(object):
             self.costs[i] = self.power_cost((self.distances[i]*3) / 1000)
             # self.costs[i] = self.distances[i] / self.norm # max distance in map
             # self.costs[i] = self.costFunction(self.distances[i] / self.norm) / 10
-            # print("i->", i, self.costs[i]) 
+            # print("i->", i, self.distances[i], self.distances[i]*3, (self.distances[i]*3)/1000, self.costs[i]) 
 
             # update target
             if ((self.tar_x[i] - x[i] >= -1 and self.tar_x[i] - x[i] <= 1) or 
