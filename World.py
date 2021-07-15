@@ -38,7 +38,7 @@ class World(object):
 
         self.counter = 0
 
-        self.ms_val = 3.6111e-5    
+        self.time_slot_val = 3.6111e-5    
 
         # ####################################################
 
@@ -78,7 +78,7 @@ class World(object):
         self.S = initS
 
         # Initial MWSNs model -----------------------------------------------------------------
-        self.obj = Mwsn(1, F, n, Di, [], [], self.ms_val)
+        self.obj = Mwsn(1, F, n, Di, [], [], self.time_slot_val)
         self.ani = {}
 
     def showResults(self):
@@ -194,7 +194,7 @@ class World(object):
             self.costs[i] = self.power_cost((self.distances[i]*3) / 1000)
             # self.costs[i] = self.distances[i] / self.norm # max distance in map
             # self.costs[i] = self.costFunction(self.distances[i] / self.norm) / 10
-            print("i->", i, self.costs[i]) 
+            # print("i->", i, self.costs[i]) 
 
             # update target
             if ((self.tar_x[i] - x[i] >= -1 and self.tar_x[i] - x[i] <= 1) or 
@@ -212,8 +212,15 @@ class World(object):
         self.sc.set_data(x, y)
 
         # send costs to solver method *************************************
-        self.S[f+1] = self.S[f]-(self.costs*self.MX[f]*self.ms_val)  # self.S[f]-(self.costs*self.MX[f]) / Di
+        # fullcost = (self.costs*self.MX[f]*self.time_slot_val)
+        self.S[f+1] = self.S[f]-(self.costs*self.MX[f]*self.time_slot_val)  # self.S[f]-(self.costs*self.MX[f]) / Di
         self.costs_packet[f] = self.costs
+
+        # ccc = (fullcost/3.8)*1000
+        # print("*******")
+        # for i in range(len(ccc)):
+        #     print("Node ", i, 5000/ccc[i])
+        # print("==>", self.costs*self.MX[f]*self.time_slot_val)
 
         # Check Umbral ----------------------
         for i in range(n):

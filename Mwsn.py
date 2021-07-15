@@ -5,7 +5,7 @@ import math
 import os
 
 class Mwsn:
-    def __init__(self, K, F, N, Di, bi, ci, ms_val):
+    def __init__(self, K, F, N, Di, bi, ci, time_slot_val):
 
         self.path_minizinc = "/home/carban/PortableApps/MiniZincIDE-2.4.3-bundle-linux-x86_64/bin/minizinc"
         self.path_model = "/home/carban/Documents/TG/Model6.mzn"
@@ -16,7 +16,7 @@ class Mwsn:
         self.Di = Di
         self.bi = bi
         self.ci = ci
-        self.ms_val = ms_val
+        self.time_slot_val = time_slot_val
         self.cf = []
 
         self.S = np.ones((F+1, N))
@@ -64,7 +64,7 @@ class Mwsn:
         #             C[j][k] = (self.S[j][k]-self.S[j+1][k])
 
         for i in range(self.F):
-            C[i] = (self.S[i]-self.S[i+1])/(self.X_bef[i]*self.ms_val)
+            C[i] = (self.S[i]-self.S[i+1])/(self.X_bef[i]*self.time_slot_val)
 
         self.ci = C.reshape(self.F, self.N)
         self.ci = [self.ci[i].tolist() for i in range(self.F)]
@@ -80,7 +80,7 @@ class Mwsn:
                         "-D", "Di="+str(self.Di), 
                         "-D", "b="+str(self.bi), 
                         "-D", "c="+str(self.ci[j]),
-                        "-D", "ms_val="+str(self.ms_val)
+                        "-D", "time_slot_val="+str(self.time_slot_val)
                     ]
                 
                 # print("ci[j]", self.ci[j])
