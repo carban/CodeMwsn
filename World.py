@@ -8,7 +8,7 @@ np.random.seed(42)
 
 class World(object):
     """docstring for world"""
-    def __init__(self, n, F, Di, WIDTH, HEIGHT, MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, show_annotations, sleepInterval, initEnergies):
+    def __init__(self, n, F, Di, WIDTH, HEIGHT, MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, show_annotations, sleepInterval, initEnergies, animation):
         
         super(World, self).__init__()
 
@@ -39,6 +39,8 @@ class World(object):
         self.counter = 0
 
         self.time_slot_val = 3.6111e-5    
+
+        self.animation = animation
 
         # ####################################################
 
@@ -80,6 +82,7 @@ class World(object):
         # Initial MWSNs model -----------------------------------------------------------------
         self.obj = Mwsn(1, F, n, Di, [], [], self.time_slot_val)
         self.ani = {}
+        self.sc = {} # just for animation
 
     def showResults(self):
 
@@ -107,7 +110,7 @@ class World(object):
         ax[2].set_title("X")
         plt.show() 
 
-    def playWorld(self):
+    def playWorldAnimated(self):
 
         fig, ax = plt.subplots() 
         ax.grid()  
@@ -124,6 +127,13 @@ class World(object):
         self.ani = matplotlib.animation.FuncAnimation(fig, self.animate, fargs=([self.x, self.y],), frames=self.F, interval=self.sleepInterval, repeat=True)
 
         plt.show()
+
+    def playWorld(self):
+        if(self.animation):
+            self.playWorldAnimated()
+        else:
+            while (not self.isDeath):
+                self.animate()
 
     def pl_dbm(self, d, f):
         return 20.0*math.log(d, 10)+20.0*math.log(f, 10)+32.44
@@ -146,7 +156,7 @@ class World(object):
 
         return self.mw_to_w(self.dbm_to_mw(Po))
 
-    def animate(self, f, data):
+    def animate(self, f=None, data=None):
 
         f = self.counter
         # self.time_text.set_text('f = {:d}'.format(f))
@@ -154,8 +164,10 @@ class World(object):
         n = self.n
         F = self.F
 
-        getx, gety = self.sc.get_data()[0], self.sc.get_data()[1]
-        
+        # getx, gety = self.sc.get_data()[0], self.sc.get_data()[1]
+        getx, gety = self.x, self.y
+        # print("getx", getx)
+
         dx = self.tar_x - getx
         dy = self.tar_y - gety
 
@@ -209,7 +221,10 @@ class World(object):
                 # ax.plot(tarx[i], tary[i], marker="o", c='r')
         
         # update data
-        self.sc.set_data(x, y)
+        if (self.animation):
+            self.sc.set_data(x, y)
+        self.x = x
+        self.y = y
 
         # send costs to solver method *************************************
         # fullcost = (self.costs*self.MX[f]*self.time_slot_val)

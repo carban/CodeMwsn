@@ -22,10 +22,12 @@ def main():
     initEnergies = [19 for i in range(n)]
     # initEnergies = [83, 91, 100]
 
+    animation = True
+
     w = World(
         n, F, Di, 
         WIDTH, HEIGHT, MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, 
-        show_annotations, sleepInterval, initEnergies)
+        show_annotations, sleepInterval, initEnergies, animation)
 
     w.playWorld()
 
