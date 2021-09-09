@@ -2,13 +2,14 @@ import matplotlib.pyplot as plt
 import matplotlib.animation
 import numpy as np
 import math
-from Mwsn import Mwsn 
+from Mwsn import Mwsn
+from PPL import PPL
 
 np.random.seed(42)
 
 class World(object):
     """docstring for world"""
-    def __init__(self, n, F, Di, WIDTH, HEIGHT, MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, show_annotations, sleepInterval, initEnergies, animation):
+    def __init__(self, n, F, Di, WIDTH, HEIGHT, MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL, router, frequency, large, Hb, Hm, show_annotations, sleepInterval, initEnergies, animation):
         
         super(World, self).__init__()
 
@@ -27,6 +28,8 @@ class World(object):
         self.LOW_VALUE = LOW_VALUE
         self.DEATH_LIMIT = DEATH_LIMIT
 
+        self.TIME_SLOT_VAL = TIME_SLOT_VAL  
+
         self.initEnergies = initEnergies
 
         self.show_annotations = show_annotations
@@ -37,8 +40,6 @@ class World(object):
         self.isDeath = False
 
         self.counter = 0
-
-        self.time_slot_val = 3.6111e-5    
 
         self.animation = animation
 
@@ -61,8 +62,8 @@ class World(object):
         self.costs = np.zeros(n)
         self.costs_packet = np.zeros((F, n))
 
-        self.norm = math.sqrt((WIDTH / 2)**2 + (HEIGHT / 2)**2) * 10
-        # print("====>", self.norm)
+        self.norm = math.sqrt((WIDTH / 2)**2 + (HEIGHT / 2)**2)
+        self.conv = 0.021 / self.norm
 
         # Initial Residual Energies -----------------------------------------------------------------
         initS = np.ones((F+1, n))
@@ -79,8 +80,11 @@ class World(object):
         self.MX = initX
         self.S = initS
 
+        # Path Loss and Power cost functions ------------------------------------------
+        self.ppl = PPL(router, frequency, large, Hb, Hm)
+
         # Initial MWSNs model -----------------------------------------------------------------
-        self.obj = Mwsn(1, F, n, Di, [], [], self.time_slot_val)
+        self.obj = Mwsn(1, F, n, Di, [], [], self.TIME_SLOT_VAL)
         self.ani = {}
         self.sc = {} # just for animation
 
@@ -202,8 +206,14 @@ class World(object):
                 self.annotation_list[i].set_position((x[i], y[i]))
             
             # update distances and costs
-            self.distances[i] = math.sqrt((x[i]-self.station[0])**2 + (y[i]-self.station[1])**2)
-            self.costs[i] = self.power_cost((self.distances[i]*3) / 1000)
+            self.distances[i] = (math.sqrt((x[i]-self.station[0])**2 + (y[i]-self.station[1])**2)) * self.conv
+            # CHANGE IT TO JUST ONE FUNCTION...IT'S BETTER YOU KNOW
+            self.costs[i] = self.ppl.power_cost_w_given_d(self.distances[i], "cost231")
+            # self.costs[i] = self.ppl.power_cost_w(self.ppl.okumura_pl_db(self.distances[i]))
+            # print("dist ==>", self.distances[i])
+            # print("cost ==>", self.costs[i])
+            # self.costs[i] = self.power_cost((self.distances[i]*3) / 1000)
+            # print("dist ==>", (self.distances[i]*3) / 1000)
             # self.costs[i] = self.distances[i] / self.norm # max distance in map
             # self.costs[i] = self.costFunction(self.distances[i] / self.norm) / 10
             # print("i->", i, self.distances[i], self.distances[i]*3, (self.distances[i]*3)/1000, self.costs[i]) 
@@ -227,15 +237,15 @@ class World(object):
         self.y = y
 
         # send costs to solver method *************************************
-        # fullcost = (self.costs*self.MX[f]*self.time_slot_val)
-        self.S[f+1] = self.S[f]-(self.costs*self.MX[f]*self.time_slot_val)  # self.S[f]-(self.costs*self.MX[f]) / Di
+        # fullcost = (self.costs*self.MX[f]*self.TIME_SLOT_VAL)
+        self.S[f+1] = self.S[f]-(self.costs*self.MX[f]*self.TIME_SLOT_VAL)  # self.S[f]-(self.costs*self.MX[f]) / Di
         self.costs_packet[f] = self.costs
 
         # ccc = (fullcost/3.8)*1000
         # print("*******")
         # for i in range(len(ccc)):
         #     print("Node ", i, 5000/ccc[i])
-        # print("==>", self.costs*self.MX[f]*self.time_slot_val)
+        # print("==>", self.costs*self.MX[f]*self.TIME_SLOT_VAL)
 
         # Check Umbral ----------------------
         for i in range(n):
@@ -244,7 +254,8 @@ class World(object):
             # print("====>", percent)
 
             if (percent > 6 and percent < self.DEATH_LIMIT):
-                self.ani.event_source.stop()
+                if (self.animation):
+                    self.ani.event_source.stop()
                 self.isDeath = True
                 self.showResults()
                 break
