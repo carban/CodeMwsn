@@ -2,18 +2,18 @@ from World import World
 
 def main():
     # n = 15 Di = 35
-    n = 4
+    n = 10
     F = 5
-    Di = 12 
+    Di = 30 
 
     WIDTH = 100
     HEIGHT = 100
 
-    MAX_SPEED = 0.8
+    MAX_SPEED = 0.6
     MIN_SPEED = 0.2
 
     LOW_VALUE = 0.01
-    DEATH_LIMIT = 99.9
+    DEATH_LIMIT = 99.8
 
     TIME_SLOT_VAL = 3.6111e-5  
         

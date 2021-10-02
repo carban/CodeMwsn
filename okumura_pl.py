@@ -96,8 +96,8 @@ def main():
 
 	x = np.array([i/1000 for i in range(1, 1000)])
 	
-	y_pl = [cost231(i, f, large, Hb, Hm) for i in x]
-	# y_pl = [okumura_pl_db(i, f, large, Hb, Hm) for i in x]
+	# y_pl = [cost231(i, f, large, Hb, Hm) for i in x]
+	y_pl = [okumura_pl_db(i, f, large, Hb, Hm) for i in x]
 	# y_pl = [free_pl_dbm(i, f) for i in x]
 
 	y_pow = [power_cost_w(y_pl[x.tolist().index(i)], router) for i in x]

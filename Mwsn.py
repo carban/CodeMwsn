@@ -60,7 +60,7 @@ class Mwsn:
         #         if (self.X_bef[j][k] != 0):
         #             C[j][k] = (self.S[j][k]-self.S[j+1][k])/self.X_bef[j][k] # (Di * (S[j]-S[j+1]))/X[j]
         #         else:
-        #             print("dsfsdfsfsd", self.X_bef[j])
+        #             # print("dsfsdfsfsd", self.X_bef[j])
         #             C[j][k] = (self.S[j][k]-self.S[j+1][k])
 
         for i in range(self.F):
