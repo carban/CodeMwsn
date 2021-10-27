@@ -5,10 +5,10 @@ import math
 import os
 
 class Mwsn:
-    def __init__(self, K, F, N, Di, bi, ci, time_slot_val):
+    def __init__(self, K, F, N, Di, bi, ci, time_slot_val, battery):
 
         self.path_minizinc = "/home/carban/PortableApps/MiniZincIDE-2.4.3-bundle-linux-x86_64/bin/minizinc"
-        self.path_model = "/home/carban/Documents/TG/Model6.mzn"
+        self.path_model = "/home/carban/Documents/TG/CodeMwsn/CPM/Model6.mzn"
         
         self.K = K
         self.F = F
@@ -17,6 +17,7 @@ class Mwsn:
         self.bi = bi
         self.ci = ci
         self.time_slot_val = time_slot_val
+        self.battery = battery
         self.cf = []
 
         self.S = np.ones((F+1, N))
@@ -55,16 +56,16 @@ class Mwsn:
         # Actual costs ----------------------------------------------------------------
         C = np.ones((self.F, self.N))
         
-        # for j in range(self.F):
-        #     for k in range(self.N):
-        #         if (self.X_bef[j][k] != 0):
-        #             C[j][k] = (self.S[j][k]-self.S[j+1][k])/self.X_bef[j][k] # (Di * (S[j]-S[j+1]))/X[j]
-        #         else:
-        #             # print("dsfsdfsfsd", self.X_bef[j])
-        #             C[j][k] = (self.S[j][k]-self.S[j+1][k])
+        for j in range(self.F):
+            for k in range(self.N):
+                if (self.X_bef[j][k] != 0):
+                    C[j][k] = (self.S[j][k]-self.S[j+1][k])/self.X_bef[j][k] # (Di * (S[j]-S[j+1]))/X[j]
+                else:
+                    # print("dsfsdfsfsd", self.X_bef[j])
+                    C[j][k] = (self.S[j][k]-self.S[j+1][k])
 
-        for i in range(self.F):
-            C[i] = (self.S[i]-self.S[i+1])/(self.X_bef[i]*self.time_slot_val)
+        # for i in range(self.F):
+            # C[i] = (self.S[i]-self.S[i+1])/(self.X_bef[i]*self.time_slot_val)
 
         self.ci = C.reshape(self.F, self.N)
         self.ci = [self.ci[i].tolist() for i in range(self.F)]
@@ -80,7 +81,8 @@ class Mwsn:
                         "-D", "Di="+str(self.Di), 
                         "-D", "b="+str(self.bi), 
                         "-D", "c="+str(self.ci[j]),
-                        "-D", "time_slot_val="+str(self.time_slot_val)
+                        "-D", "time_slot_val="+str(self.time_slot_val),
+                        "-D", "battery="+str(self.battery)
                     ]
                 
                 # print("ci[j]", self.ci[j])
@@ -94,7 +96,12 @@ class Mwsn:
                 s = json.loads(outs[0])
                 self.X = np.append(self.X, s[0])
                 self.bi = s[1]
-                print(s)
+                
+                states = s[1]
+                states = [round((s*100)/self.battery, 4) for s in states]
+
+                print(s[0], "\n", states)
+                print("________________________________________________________________________________")
 
                 # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 

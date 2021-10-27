@@ -3,12 +3,13 @@ import numpy as np
 
 class PPL():
 	"""docstring for PPL"""
-	def __init__(self, router, f, large=None, Hb=None, Hm=None):
+	def __init__(self, router, f, large=None, Hb=None, Hm=None, PLMODEL="cost231"):
 		self.router = router
 		self.f = f
 		self.large = large
 		self.Hb = Hb
 		self.Hm = Hm
+		self.PLMODEL = PLMODEL
 		
 	#####################################################
 
@@ -33,7 +34,7 @@ class PPL():
 		# For large cities 
 		if (large):
 			if (f >= 150 and f <= 200):
-				CFH = 8.9 * (np.log10(1.54*Hm))**2 - 11
+				CFH = 8.29 * (np.log10(1.54*Hm))**2 - 1.1
 			elif (f >= 200): # <= 1500
 				CFH = 3.2 * (np.log10(11.75*Hm))**2 - 4.97
 		# For small and medium-sized cities 
@@ -84,8 +85,8 @@ class PPL():
 		Po = router["Pr"] + Pl - router["Go"] - router["Gi"]
 		return self.mw_to_w(self.dbm_to_mw(Po))
 
-	def power_cost_w_given_d(self, d, path_loss_model_name):
-		name = path_loss_model_name
+	def power_cost_w_given_d(self, d):
+		name = self.PLMODEL
 		if (name == "free"):
 			pl = self.free_pl_dbm(d)
 		elif (name == "okumura"):
@@ -95,8 +96,9 @@ class PPL():
 
 		return self.power_cost_w(pl)
 
-	def limitPL(self, router):
-	    return router["Po"] + router["Go"] + router["Gi"] - router["Pr"]	
+	def limitPL(self):
+		router = self.router
+		return router["Po"] + router["Go"] + router["Gi"] - router["Pr"]	
 
 	def max_pl_and_dist(self, y_pl, x, limit_pl):
 		maxdist = 0
@@ -109,3 +111,19 @@ class PPL():
 				maxdist = x[maxpos]
 				break
 		return maxpl, maxdist
+
+	def get_max_dist(self):
+		x = np.array([i/1000 for i in range(1, 1200)])
+
+		name = self.PLMODEL
+
+		if (name == "free"):
+			y_pl = [self.free_pl_dbm(i) for i in x]
+		elif (name == "okumura"):
+			y_pl = [self.okumura_pl_db(i) for i in x]
+		elif (name == "cost231"):
+			y_pl = [self.cost231(i) for i in x]
+
+		maxpl, maxdist = self.max_pl_and_dist(y_pl, x, self.limitPL())
+
+		return maxdist * 1000 # meters unit

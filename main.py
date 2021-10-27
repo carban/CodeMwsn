@@ -2,46 +2,48 @@ from World import World
 
 def main():
     # n = 15 Di = 35
-    n = 10
+    n = 3
     F = 5
-    Di = 30 
-
-    WIDTH = 100
-    HEIGHT = 100
+    Di = 15
 
     MAX_SPEED = 0.6
     MIN_SPEED = 0.2
 
-    LOW_VALUE = 0.01
-    DEATH_LIMIT = 99.8
+    LOW_VALUE = 0.001
+    DEATH_LIMIT = 99.9
 
     TIME_SLOT_VAL = 3.6111e-5  
+
+    animation = False
         
     show_annotations = False
 
     sleepInterval = 25
 
-    initEnergies = [19 for i in range(n)]
-    # initEnergies = [83, 91, 100]
+    BATTERY_CAPACITY = 19
+
+    # 3.8 Wh -> 20% where battery capacity is 19 Wh
+    initEnergies = [BATTERY_CAPACITY for i in range(n)]
+    # initEnergies = [3.84, 3.84, 3.84, 3.84, 3.83, 3.83, 3.83, 3.82, 3.81, 3.81]
 
     router = {
-        "Po": 23,
+        "Po": 20,
         "Go": 2,
         "Gi": 2,
-        "Pr": -71
+        "Pr": -76
     }
 
-    frequency = 5000
-    large = True
-    Hb = 3
-    Hm = 0.5
+    frequency = 2400
+    large = False
+    Hb = 30
+    Hm = 1.5
 
-    animation = False
+    PLMODEL = "cost231"
 
     w = World(
         n, F, Di, 
-        WIDTH, HEIGHT, MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL,
-        router, frequency, large, Hb, Hm,
+        MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL,
+        PLMODEL, BATTERY_CAPACITY, router, frequency, large, Hb, Hm,
         show_annotations, sleepInterval, initEnergies, animation)
 
     w.playWorld()
