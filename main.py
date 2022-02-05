@@ -1,50 +1,54 @@
+import json
 from World import World
 
+# Main method
 def main():
-    # n = 15 Di = 35
-    n = 3
-    F = 5
-    Di = 15
 
-    MAX_SPEED = 0.6
-    MIN_SPEED = 0.2
+    # Opening JSON file
+    file = open("data.json")
+     
+    # Returns JSON object as dictionary
+    data = json.load(file)
+    
+    N = data["N"]
+    F = data["F"]
+    Di = data["Di"]
 
-    LOW_VALUE = 0.001
-    DEATH_LIMIT = 99.9
+    MAX_SPEED = data["MAX_SPEED"]
+    MIN_SPEED = data["MIN_SPEED"]
 
-    TIME_SLOT_VAL = 3.6111e-5  
+    LOW_VALUE = data["LOW_VALUE"]
+    DEATH_LIMIT = data["DEATH_LIMIT"]
 
-    animation = False
+    TIME_SLOT_VAL = data["TIME_SLOT_VAL"] 
+
+    ANIMATION = data["ANIMATION"]
         
-    show_annotations = False
+    SHOW_ANNOTATIONS = data["SHOW_ANNOTATIONS"]
 
-    sleepInterval = 25
+    SLEEP_INTERVAL = data["SLEEP_INTERVAL"]
 
-    BATTERY_CAPACITY = 19
+    BATTERY_CAPACITY = data["BATTERY_CAPACITY"]
 
     # 3.8 Wh -> 20% where battery capacity is 19 Wh
-    initEnergies = [BATTERY_CAPACITY for i in range(n)]
-    # initEnergies = [3.84, 3.84, 3.84, 3.84, 3.83, 3.83, 3.83, 3.82, 3.81, 3.81]
+    INIT_ENERGIES = data["INIT_ENERGIES"]
+    # INIT_ENERGIES = [18.992, 19, 18.998, 19, 18.992] # different levels
+    # INIT_ENERGIES = [3.84, 3.84, 3.84, 3.84, 3.83, 3.83, 3.83, 3.82, 3.81, 3.81]
 
-    router = {
-        "Po": 20,
-        "Go": 2,
-        "Gi": 2,
-        "Pr": -76
-    }
+    ROUTER = data["ROUTER"]
 
-    frequency = 2400
-    large = False
-    Hb = 30
-    Hm = 1.5
+    FREQUENCY = data["FREQUENCY"]
+    LARGE = data["LARGE"]
+    Hb = data["Hb"]
+    Hm = data["Hm"]
 
-    PLMODEL = "cost231"
+    PLMODEL = data["PLMODEL"]
 
     w = World(
-        n, F, Di, 
+        N, F, Di, 
         MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL,
-        PLMODEL, BATTERY_CAPACITY, router, frequency, large, Hb, Hm,
-        show_annotations, sleepInterval, initEnergies, animation)
+        PLMODEL, BATTERY_CAPACITY, ROUTER, FREQUENCY, LARGE, Hb, Hm,
+        SHOW_ANNOTATIONS, SLEEP_INTERVAL, INIT_ENERGIES, ANIMATION)
 
     w.playWorld()
 

@@ -127,21 +127,21 @@ def main():
 	y_pl_o = [okumura_pl_db(i, f, large, Hb, Hm) for i in x]
 	y_pl_f = [free_pl_dbm(i, f) for i in x]
 
-	# y_pl = [okumura_SEAMCAT(i, f, Hb, Hm) for i in x]
+	y_pl = [okumura_SEAMCAT(i, f, Hb, Hm) for i in x]
 	# y_pl = [free_SEAMCAT(i, f, Hb, Hm) for i in x]
 
 	y_pow = [power_cost_w(y_pl[x.tolist().index(i)], router) for i in x]
-	y_pow_o = [power_cost_w(y_pl_o[x.tolist().index(i)], router) for i in x]
-	y_pow_f = [power_cost_w(y_pl_f[x.tolist().index(i)], router) for i in x]
+	#y_pow_o = [power_cost_w(y_pl_o[x.tolist().index(i)], router) for i in x]
+	#y_pow_f = [power_cost_w(y_pl_f[x.tolist().index(i)], router) for i in x]
 	# print(y_pow)
 	limit_pl = limitPL(router) 
 	maxpl, maxdist = max_pl_and_dist(y_pl, x, limit_pl)
-	maxpl_o, maxdist_o = max_pl_and_dist(y_pl_o, x, limit_pl)
-	maxpl_f, maxdist_f = max_pl_and_dist(y_pl_f, x, limit_pl)
+	#maxpl_o, maxdist_o = max_pl_and_dist(y_pl_o, x, limit_pl)
+	#maxpl_f, maxdist_f = max_pl_and_dist(y_pl_f, x, limit_pl)
 	
 	maxpower = power_cost_w(maxpl, router)
-	maxpower_o = power_cost_w(maxpl_o, router)
-	maxpower_f = power_cost_w(maxpl_f, router)
+	#maxpower_o = power_cost_w(maxpl_o, router)
+	#maxpower_f = power_cost_w(maxpl_f, router)
 
 	print("Path Loss Limit dB  ->", limit_pl)
 	print("Max path loss in dB ->", maxpl)
@@ -150,27 +150,27 @@ def main():
 
 	fig, (axs1, axs2) = plt.subplots(2)
 	axs1.plot(x, y_pl)
-	axs1.plot(x, y_pl_o)
-	axs1.plot(x, y_pl_f)
+	#axs1.plot(x, y_pl_o)
+	#axs1.plot(x, y_pl_f)
 	axs1.plot(maxdist, maxpl, color='r', marker='o')
-	axs1.plot(maxdist_o, maxpl_o, color='r', marker='o')
-	axs1.plot(maxdist_f, maxpl_f, color='r', marker='o')
-	axs1.text(maxdist-0.1, maxpl+4, '({}, {})'.format(round(maxdist, 4), round(maxpl, 1)))
-	axs1.text(maxdist_o, maxpl_o-6, '({}, {})'.format(round(maxdist_o, 4), round(maxpl_o, 1)))
-	axs1.text(maxdist_f, maxpl_f-6, '({}, {})'.format(round(maxdist_f, 4), round(maxpl_f, 1)))	
+	#axs1.plot(maxdist_o, maxpl_o, color='r', marker='o')
+	#axs1.plot(maxdist_f, maxpl_f, color='r', marker='o')
+	#axs1.text(maxdist-0.1, maxpl+4, '({}, {})'.format(round(maxdist, 4), round(maxpl, 1)))
+	#axs1.text(maxdist_o, maxpl_o-6, '({}, {})'.format(round(maxdist_o, 4), round(maxpl_o, 1)))
+	#axs1.text(maxdist_f, maxpl_f-6, '({}, {})'.format(round(maxdist_f, 4), round(maxpl_f, 1)))	
 	axs1.set_title("Distance vs Path Loss")
 	axs1.set_xlabel("Distance (Km)")
 	axs1.set_ylabel("PL (dB)")
 	axs1.legend(['Cost231', 'Okumura-Hata', 'FPL'])      
 	axs2.plot(x, y_pow)
-	axs2.plot(x, y_pow_o)
-	axs2.plot(x, y_pow_f)
+	#axs2.plot(x, y_pow_o)
+	#axs2.plot(x, y_pow_f)
 	axs2.plot(maxdist, maxpower, color='r', marker='o')
-	axs2.plot(maxdist_o, maxpower_o, color='r', marker='o')
-	axs2.plot(maxdist_f, maxpower_f, color='r', marker='o')
-	axs2.text(maxdist-0.1, maxpower+100, '({},\n {})'.format(round(maxdist, 4), round(maxpower, 1)))
-	axs2.text(maxdist_o, maxpower_o+100, '({},\n {})'.format(round(maxdist_o, 4), round(maxpower_o, 1)))
-	axs2.text(maxdist_f, maxpower_f+100, '({}, {})'.format(round(maxdist_f, 4), round(maxpower_f, 1)))	
+	#axs2.plot(maxdist_o, maxpower_o, color='r', marker='o')
+	#axs2.plot(maxdist_f, maxpower_f, color='r', marker='o')
+	#axs2.text(maxdist-0.1, maxpower+100, '({},\n {})'.format(round(maxdist, 4), round(maxpower, 1)))
+	#axs2.text(maxdist_o, maxpower_o+100, '({},\n {})'.format(round(maxdist_o, 4), round(maxpower_o, 1)))
+	#axs2.text(maxdist_f, maxpower_f+100, '({}, {})'.format(round(maxdist_f, 4), round(maxpower_f, 1)))	
 	axs2.set_title("Distance vs Power Cost")
 	axs2.set_xlabel("Distance (Km)")
 	axs2.set_ylabel("Power (W)")

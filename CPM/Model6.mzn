@@ -16,10 +16,11 @@ array[s] of float: c;
 array[s] of var t: x;
 
 % Constraints
-constraint sum(x) >= N /\ sum(x) <= Di;
+constraint sum(x) >= 1 /\ sum(x) <= Di;
 % constraint sum(x) == Di;
+% constraint sum(x) <= Di;
 constraint forall(i in s where max(b) = b[i] /\ min(c) = c[i])(max(x) = x[i]);
-% constraint forall(i in s where min(b) = b[i] /\ max(c) = c[i])(min(x) = x[i]); %%%%%%
+constraint forall(i in s where min(b) = b[i] /\ max(c) = c[i])(min(x) = x[i]); %%%%%%
 
 array[s] of var 0..battery: er;
 constraint er = [b[i] - (c[i]*x[i]*time_slot_val) | i in s];

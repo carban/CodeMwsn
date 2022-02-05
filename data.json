@@ -1,3 +1,26 @@
 {
-    "asda": "sdadas"
+    "N": 10,
+    "F": 5,
+    "Di": 10,
+    "MAX_SPEED": 0.6,
+    "MIN_SPEED": 0.2,
+    "LOW_VALUE": 0.001,
+    "DEATH_LIMIT": 99.9,
+    "TIME_SLOT_VAL": 3.6111e-5, 
+    "ANIMATION": false,  
+    "SHOW_ANNOTATIONS": false,
+    "SLEEP_INTERVAL": 25,
+    "BATTERY_CAPACITY": 19,
+    "INIT_ENERGIES": [19, 19, 19, 19, 19, 19, 19, 19, 19, 19],
+    "ROUTER": {
+        "Po": 20,
+        "Go": 2,
+        "Gi": 2,
+        "Pr": -76
+    },
+    "FREQUENCY": 2400,
+    "LARGE": false,
+    "Hb": 30,
+    "Hm": 1.5,
+    "PLMODEL": "cost231"
 }

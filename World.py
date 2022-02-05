@@ -13,6 +13,8 @@ class World(object):
         
         super(World, self).__init__()
 
+        print(initEnergies)
+
         # ####################################################
         
         # Path Loss and Power cost functions ------------------------------------------
@@ -21,10 +23,12 @@ class World(object):
         self.n = n
         self.F = F
         self.Di = Di
+        
+        self.PLMODEL = PLMODEL
 
         # diameter of the circle | CHECK THE OTHER PLACES WHERE WITH AND NORM APPEARS
-        self.WIDTH = self.ppl.get_max_dist() * 2
-        # self.WIDTH = 55 * 2
+        # self.WIDTH = self.ppl.get_max_dist() * 2
+        self.WIDTH = 55 * 2
         self.HEIGHT = self.WIDTH
 
         self.MAX_SPEED = MAX_SPEED
@@ -91,7 +95,9 @@ class World(object):
         self.S = initS
 
         # Initial MWSNs model -----------------------------------------------------------------
-        self.obj = Mwsn(1, F, n, Di, [], [], self.TIME_SLOT_VAL, self.BATTERY_CAPACITY)
+        self.factor = 100; 
+        maxcost = self.ppl.power_cost_w_given_d(self.norm/1000) * self.factor
+        self.obj = Mwsn(1, F, n, Di, [], [], maxcost, self.TIME_SLOT_VAL, self.BATTERY_CAPACITY)
         self.ani = {}
         self.sc = {} # just for animation
 
@@ -109,6 +115,7 @@ class World(object):
         print("  Total number of frames: ", length)
         print("  Optimization events:    ", length / self.F )
         print("  TS per frame:           ", round(np.mean([np.sum(f) for f in self.graphX]), 3))
+        print("  Path loss model:        ", self.PLMODEL)
 
 
         # PLOTING GRAPHS ##############################################
@@ -233,10 +240,10 @@ class World(object):
             # update distances and costs
             self.distances[i] = ((math.sqrt((x[i]-self.station[0])**2 + (y[i]-self.station[1])**2))) / 1000 # * self.conv
             # CHANGE IT TO JUST ONE FUNCTION...IT'S BETTER YOU KNOW
-            self.costs[i] = self.ppl.power_cost_w_given_d(self.distances[i]) * 4
+            self.costs[i] = self.ppl.power_cost_w_given_d(self.distances[i]) * self.factor
             # self.costs[i] = self.ppl.power_cost_w(self.ppl.okumura_pl_db(self.distances[i]))
             # print("dist ==>", i, self.distances[i])
-            # print("cost ==>", self.costs[i])
+            print("cost ==>", self.costs[i])
             # self.costs[i] = self.power_cost((self.distances[i]*3) / 1000)
             # print("dist ==>", (self.distances[i]*3) / 1000)
             # self.costs[i] = self.distances[i] / self.norm # max distance in map

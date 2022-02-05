@@ -5,7 +5,7 @@ import math
 import os
 
 class Mwsn:
-    def __init__(self, K, F, N, Di, bi, ci, time_slot_val, battery):
+    def __init__(self, K, F, N, Di, bi, ci, maxcost, time_slot_val, battery):
 
         self.path_minizinc = "/home/carban/PortableApps/MiniZincIDE-2.4.3-bundle-linux-x86_64/bin/minizinc"
         self.path_model = "/home/carban/Documents/TG/CodeMwsn/CPM/Model6.mzn"
@@ -16,6 +16,7 @@ class Mwsn:
         self.Di = Di
         self.bi = bi
         self.ci = ci
+        self.maxcost = maxcost
         self.time_slot_val = time_slot_val
         self.battery = battery
         self.cf = []
@@ -53,23 +54,26 @@ class Mwsn:
 
         self.X = np.array([])
 
+        print(self.S)
+
         # Actual costs ----------------------------------------------------------------
         C = np.ones((self.F, self.N))
         
         for j in range(self.F):
             for k in range(self.N):
                 if (self.X_bef[j][k] != 0):
-                    C[j][k] = (self.S[j][k]-self.S[j+1][k])/self.X_bef[j][k] # (Di * (S[j]-S[j+1]))/X[j]
+                    C[j][k] = (self.S[j][k]-self.S[j+1][k])/(self.X_bef[j][k]*self.time_slot_val) # (Di * (S[j]-S[j+1]))/X[j]
                 else:
                     # print("dsfsdfsfsd", self.X_bef[j])
-                    C[j][k] = (self.S[j][k]-self.S[j+1][k])
+                    # C[j][k] = (self.S[j][k]-self.S[j+1][k])
+                    C[j][k] = self.maxcost
 
         # for i in range(self.F):
-            # C[i] = (self.S[i]-self.S[i+1])/(self.X_bef[i]*self.time_slot_val)
+        #     C[i] = (self.S[i]-self.S[i+1])/(self.X_bef[i]*self.time_slot_val)
 
         self.ci = C.reshape(self.F, self.N)
         self.ci = [self.ci[i].tolist() for i in range(self.F)]
-        # print("Costs calculated", self.ci)
+        print("Costs calculated", self.ci)
 
         for i in range(self.K):   
             for j in range(self.F):
@@ -88,24 +92,35 @@ class Mwsn:
                 # print("ci[j]", self.ci[j])
                 # print(command)
 
-                process = subprocess.Popen(command, stdout=subprocess.PIPE)
-                output, error = process.communicate()
-                outs = output.decode("utf-8").split("\n")
-                # print(outs, error)
+                try:
+                    process = subprocess.Popen(command, stdout=subprocess.PIPE)
+                    output, error = process.communicate()
+                    outs = output.decode("utf-8").split("\n")
+                    # print(outs, error)
 
-                s = json.loads(outs[0])
-                self.X = np.append(self.X, s[0])
-                self.bi = s[1]
-                
-                states = s[1]
-                states = [round((s*100)/self.battery, 4) for s in states]
+                    s = json.loads(outs[0])
+                    self.X = np.append(self.X, s[0])
+                    self.bi = s[1]
+            
+                    states = s[1]
+                    states = [round((s*100)/self.battery, 4) for s in states]
 
-                print(s[0], "\n", states)
-                print("________________________________________________________________________________")
+                    print(s[0], "\n", states)
+                    print("________________________________________________________________________________")
+
+
+                except Exception as e:
+                    print(e)
+                    print(outs, error)
+                    # self.X = np.append(self.X, [1 for i in self.N])
+                    # self.bi = self.bi-self.ci*self.X
+
 
                 # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
             # Amount of time slots computed -----------------------------------------------   
+            # print("X", self.X.reshape(self.F, self.N))
+
             self.X = self.X.reshape(self.F, self.N)
             self.X_bef = self.X
             # os.system('clear')
