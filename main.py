@@ -32,6 +32,9 @@ def main():
 
     # 3.8 Wh -> 20% where battery capacity is 19 Wh
     INIT_ENERGIES = data["INIT_ENERGIES"]
+    if (len(INIT_ENERGIES) == 0):
+        INIT_ENERGIES = [BATTERY_CAPACITY for i in range(N)]
+        
     # INIT_ENERGIES = [18.992, 19, 18.998, 19, 18.992] # different levels
     # INIT_ENERGIES = [3.84, 3.84, 3.84, 3.84, 3.83, 3.83, 3.83, 3.82, 3.81, 3.81]
 
@@ -49,6 +52,8 @@ def main():
         MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL,
         PLMODEL, BATTERY_CAPACITY, ROUTER, FREQUENCY, LARGE, Hb, Hm,
         SHOW_ANNOTATIONS, SLEEP_INTERVAL, INIT_ENERGIES, ANIMATION)
+
+    print(" ||||||||||||||||||||| START |||||||||||||||||||||")
 
     w.playWorld()
 

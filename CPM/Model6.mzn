@@ -6,6 +6,7 @@ float: battery;
 
 set of int: s = 1..N;
 set of int: t = 0..Di;
+set of float: set_bat = 0..battery;
 
 % array[s] of int: b = [80,100,95]; %100
 array[s] of float: b;
@@ -22,7 +23,7 @@ constraint sum(x) >= 1 /\ sum(x) <= Di;
 constraint forall(i in s where max(b) = b[i] /\ min(c) = c[i])(max(x) = x[i]);
 constraint forall(i in s where min(b) = b[i] /\ max(c) = c[i])(min(x) = x[i]); %%%%%%
 
-array[s] of var 0..battery: er;
+array[s] of var set_bat: er;
 constraint er = [b[i] - (c[i]*x[i]*time_slot_val) | i in s];
 
 % Objective Function

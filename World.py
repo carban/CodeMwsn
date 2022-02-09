@@ -13,7 +13,7 @@ class World(object):
         
         super(World, self).__init__()
 
-        print(initEnergies)
+        # print(initEnergies)
 
         # ####################################################
         
