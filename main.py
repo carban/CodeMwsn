@@ -27,11 +27,11 @@ def main():
     SHOW_ANNOTATIONS = data["SHOW_ANNOTATIONS"]
 
     SLEEP_INTERVAL = data["SLEEP_INTERVAL"]
-
+    
     BATTERY_CAPACITY = data["BATTERY_CAPACITY"]
 
     # 3.8 Wh -> 20% where battery capacity is 19 Wh
-    INIT_ENERGIES = data["INIT_ENERGIES"]
+    INIT_ENERGIES = data["INIT_ENERGIES"]# [18.94, 18.95, 19, 19, 18.94, 18.95],  [19, 18.94]
     if (len(INIT_ENERGIES) == 0):
         INIT_ENERGIES = [BATTERY_CAPACITY for i in range(N)]
         
@@ -47,10 +47,12 @@ def main():
 
     PLMODEL = data["PLMODEL"]
 
+    SOLVER = data["SOLVER"]
+
     w = World(
         N, F, Di, 
         MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL,
-        PLMODEL, BATTERY_CAPACITY, ROUTER, FREQUENCY, LARGE, Hb, Hm,
+        PLMODEL, SOLVER, BATTERY_CAPACITY, ROUTER, FREQUENCY, LARGE, Hb, Hm,
         SHOW_ANNOTATIONS, SLEEP_INTERVAL, INIT_ENERGIES, ANIMATION)
 
     print(" ||||||||||||||||||||| START |||||||||||||||||||||")

@@ -17,7 +17,7 @@ array[s] of float: c;
 array[s] of var t: x;
 
 % Constraints
-constraint sum(x) >= 1 /\ sum(x) <= Di;
+constraint sum(x) >= N /\ sum(x) <= Di;
 % constraint sum(x) == Di;
 % constraint sum(x) <= Di;
 constraint forall(i in s where max(b) = b[i] /\ min(c) = c[i])(max(x) = x[i]);

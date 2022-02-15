@@ -9,7 +9,7 @@ np.random.seed(42)
 
 class World(object):
     """docstring for world"""
-    def __init__(self, n, F, Di, MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL, PLMODEL, BATTERY_CAPACITY, router, frequency, large, Hb, Hm, show_annotations, sleepInterval, initEnergies, animation):
+    def __init__(self, n, F, Di, MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL, PLMODEL, SOLVER, BATTERY_CAPACITY, router, frequency, large, Hb, Hm, show_annotations, sleepInterval, initEnergies, animation):
         
         super(World, self).__init__()
 
@@ -25,8 +25,10 @@ class World(object):
         self.Di = Di
         
         self.PLMODEL = PLMODEL
+        self.SOLVER = SOLVER
 
         # diameter of the circle | CHECK THE OTHER PLACES WHERE WITH AND NORM APPEARS
+        # VALIDATE THIS, THE USER CANNOT PUT A NUMBER BIGGER THAN THE NUMBER
         # self.WIDTH = self.ppl.get_max_dist() * 2
         self.WIDTH = 55 * 2
         self.HEIGHT = self.WIDTH
@@ -63,17 +65,22 @@ class World(object):
         # self.conv = 0.025 / self.norm
 
         self.annotation_list = []
-        self.x = np.random.uniform(low=LOW_VALUE, high=self.WIDTH, size=(n,)) 
+        self.x = np.random.uniform(low=LOW_VALUE, high=self.WIDTH, size=(n,))
+        # self.x = np.array([10 for i in range(self.n)])
         # self.y = np.random.randint(low=LOW_VALUE, high=100, size=(n,))
+        # self.y = np.array([50, 60])
         self.y = np.array([self.get_posy_givenx(x) for x in self.x])
 
         self.time_text = ""
 
         self.tar_x = np.random.uniform(low=LOW_VALUE, high=self.WIDTH, size=(n,))
+        # self.tar_x = np.array([100 for i in range(self.n)])
         # self.tar_y = np.random.randint(low=LOW_VALUE, high=HEIGHT, size=(n,))
+        # self.tar_y = np.array([50, 60])
         self.tar_y = np.array([self.get_posy_givenx(x) for x in self.tar_x])
 
         self.speed = np.random.uniform(MIN_SPEED, MAX_SPEED, n)
+        # self.speed = np.array([0.1 for i in range(self.n)])
 
         self.distances = np.zeros(n)
         self.costs = np.zeros(n)
@@ -97,13 +104,13 @@ class World(object):
         # Initial MWSNs model -----------------------------------------------------------------
         self.factor = 100; 
         maxcost = self.ppl.power_cost_w_given_d(self.norm/1000) * self.factor
-        self.obj = Mwsn(1, F, n, Di, [], [], maxcost, self.TIME_SLOT_VAL, self.BATTERY_CAPACITY)
+        self.obj = Mwsn(1, F, n, Di, [], [], maxcost, self.TIME_SLOT_VAL, self.BATTERY_CAPACITY, self.SOLVER)
         self.ani = {}
         self.sc = {} # just for animation
 
     def showResults(self):
 
-        print(" |||||||||| Results ||||||||||")
+        print("|||||||||| Results ||||||||||")
 
         length = len(self.graphS)
         print("  N:                      ", self.n)
@@ -116,10 +123,13 @@ class World(object):
         print("  Optimization events:    ", length / self.F )
         print("  TS per frame:           ", round(np.mean([np.sum(f) for f in self.graphX]), 3))
         print("  Path loss model:        ", self.PLMODEL)
+        print("  Solver:                 ", self.SOLVER)
 
 
         # PLOTING GRAPHS ##############################################
         self.graphS.pop(0)
+        self.graphC.pop(0)
+
         fig, ax = plt.subplots(3)
         ax[0].plot(self.graphS)
         ax[0].plot([self.DEATH_LIMIT for i in range(length)], c='r')
@@ -146,7 +156,7 @@ class World(object):
     def playWorldAnimated(self):
 
         fig, ax = plt.subplots()
-        # self.ax = ax 
+        self.ax = ax 
         ax.grid()  
         plt.xlim(0, self.WIDTH)
         plt.ylim(0, self.HEIGHT)
@@ -171,27 +181,6 @@ class World(object):
             while (not self.isDeath):
                 self.animate()
 
-    # def pl_dbm(self, d, f):
-    #     return 20.0*math.log(d, 10)+20.0*math.log(f, 10)+32.44
-
-    # def dbm_to_mw(self, db):
-    #     return 10.0**(db/10.0)
-
-    # def mw_to_w(self, mw):
-    #     return mw / 1000
-
-    # def power_cost(self, d):
-    #     # d in Km
-    #     f = 5e3 #MHz
-    #     Po = 23
-    #     Go = 2
-    #     Gi = 2
-    #     Pr = -71
-    #     Pl = self.pl_dbm(d, f)
-    #     Po = Pr + Pl - Go - Gi
-
-    #     return self.mw_to_w(self.dbm_to_mw(Po))
-
     def animate(self, f=None, data=None):
 
         f = self.counter
@@ -215,7 +204,7 @@ class World(object):
 
         # updating positions and targets RWP approach 
         for i in range(n):
-
+            # self.ax.plot(self.tar_x[i], self.tar_y[i], marker="o", c='r')
             # update positions
             # si la pendiente no esta muy inclinada
             if (m[i] >= -5 and m[i] <= 5):
@@ -253,6 +242,8 @@ class World(object):
             # update target
             if ((self.tar_x[i] - x[i] >= -1 and self.tar_x[i] - x[i] <= 1) or 
                 (self.tar_y[i] - y[i] >= -1 and self.tar_y[i] - y[i] <= 1)):
+
+                # self.S = np.array([np.array([0 for u in range(self.n)]) for v in range(self.F+1)])
                 # update target position
                 self.tar_x[i] = np.random.uniform(low=self.LOW_VALUE, high=self.WIDTH)
                 # self.tar_y[i] = np.random.randint(low=self.LOW_VALUE, high=self.WIDTH)
@@ -300,7 +291,7 @@ class World(object):
 
             self.obj.setS(self.S)
             self.obj.setBi(self.S[F].tolist())
-            self.MX = self.obj.compute()
+            # self.MX = self.obj.compute()
             
             # MX = np.ones((self.F, self.n))
             # self.MX = MX * (self.Di / self.n)
@@ -317,7 +308,7 @@ class World(object):
                 self.graphC.append(self.costs_packet[i].tolist())
             
             self.S[0] = self.S[F]
-            # S[0] = initEnergies
+            self.S[0] = self.initEnergies
 
             self.counter = 0
         else:
