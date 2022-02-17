@@ -5,15 +5,15 @@ import math
 from Mwsn import Mwsn
 from PPL import PPL
 
-np.random.seed(42)
-
 class World(object):
     """docstring for world"""
-    def __init__(self, n, F, Di, MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL, PLMODEL, SOLVER, BATTERY_CAPACITY, router, frequency, large, Hb, Hm, show_annotations, sleepInterval, initEnergies, animation):
+    def __init__(self, seed, n, F, Di, MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL, PLMODEL, SOLVER, BATTERY_CAPACITY, router, frequency, large, Hb, Hm, show_annotations, sleepInterval, initEnergies, animation):
         
         super(World, self).__init__()
 
         # print(initEnergies)
+
+        np.random.seed(seed)
 
         # ####################################################
         
@@ -102,7 +102,7 @@ class World(object):
         self.S = initS
 
         # Initial MWSNs model -----------------------------------------------------------------
-        self.factor = 100; 
+        self.factor = 10; 
         maxcost = self.ppl.power_cost_w_given_d(self.norm/1000) * self.factor
         self.obj = Mwsn(1, F, n, Di, [], [], maxcost, self.TIME_SLOT_VAL, self.BATTERY_CAPACITY, self.SOLVER)
         self.ani = {}
@@ -129,6 +129,7 @@ class World(object):
         # PLOTING GRAPHS ##############################################
         self.graphS.pop(0)
         self.graphC.pop(0)
+        self.graphX.pop(0)
 
         fig, ax = plt.subplots(3)
         ax[0].plot(self.graphS)
@@ -219,8 +220,11 @@ class World(object):
                 nx[i] = (dx[i]/dy[i])*ny[i] - (dx[i]/dy[i])*gety[i] + getx[i]
 
             # assign new positions
-            x[i] = nx[i]
-            y[i] = ny[i]
+            # x[i] = nx[i]
+            # y[i] = ny[i]
+
+            x[i] = getx[i]
+            y[i] = gety[i]
 
             # update annotations
             if (self.show_annotations):
@@ -230,14 +234,11 @@ class World(object):
             self.distances[i] = ((math.sqrt((x[i]-self.station[0])**2 + (y[i]-self.station[1])**2))) / 1000 # * self.conv
             # CHANGE IT TO JUST ONE FUNCTION...IT'S BETTER YOU KNOW
             self.costs[i] = self.ppl.power_cost_w_given_d(self.distances[i]) * self.factor
+            # self.costs[i] = 5
             # self.costs[i] = self.ppl.power_cost_w(self.ppl.okumura_pl_db(self.distances[i]))
             # print("dist ==>", i, self.distances[i])
-            print("cost ==>", self.costs[i])
-            # self.costs[i] = self.power_cost((self.distances[i]*3) / 1000)
-            # print("dist ==>", (self.distances[i]*3) / 1000)
-            # self.costs[i] = self.distances[i] / self.norm # max distance in map
-            # self.costs[i] = self.costFunction(self.distances[i] / self.norm) / 10
-            # print("i->", i, self.distances[i], self.distances[i]*3, (self.distances[i]*3)/1000, self.costs[i]) 
+            # print("cost ==>", self.costs[i])
+             
 
             # update target
             if ((self.tar_x[i] - x[i] >= -1 and self.tar_x[i] - x[i] <= 1) or 
@@ -291,7 +292,7 @@ class World(object):
 
             self.obj.setS(self.S)
             self.obj.setBi(self.S[F].tolist())
-            # self.MX = self.obj.compute()
+            self.MX = self.obj.compute()
             
             # MX = np.ones((self.F, self.n))
             # self.MX = MX * (self.Di / self.n)
@@ -308,7 +309,7 @@ class World(object):
                 self.graphC.append(self.costs_packet[i].tolist())
             
             self.S[0] = self.S[F]
-            self.S[0] = self.initEnergies
+            # self.S[0] = self.initEnergies
 
             self.counter = 0
         else:

@@ -57,7 +57,7 @@ class Mwsn:
 
         self.X = np.array([])
 
-        print(self.S)
+        # print(self.S)
 
         # Actual costs ----------------------------------------------------------------
         C = np.ones((self.F, self.N))
@@ -162,7 +162,7 @@ class Mwsn:
                     process = subprocess.Popen(command, stdout=subprocess.PIPE)
                     output, error = process.communicate()
                     outs = output.decode("utf-8").split("\n")
-                    print(outs, error)
+                    # print(outs, error)
 
                     s = json.loads(outs[0])
                     self.X = np.append(self.X, s[0])
@@ -178,7 +178,7 @@ class Mwsn:
                 except Exception as e:
                     print(e)
                     print(outs, error)
-                    print("error")
+                    print("---unsat---")
                     m = self.N if self.Di >= self.N else self.Di 
 
                     if (m == self.N):

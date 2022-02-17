@@ -10,6 +10,8 @@ def main():
     # Returns JSON object as dictionary
     data = json.load(file)
     
+    SEED = data['SEED']
+
     N = data["N"]
     F = data["F"]
     Di = data["Di"]
@@ -31,7 +33,7 @@ def main():
     BATTERY_CAPACITY = data["BATTERY_CAPACITY"]
 
     # 3.8 Wh -> 20% where battery capacity is 19 Wh
-    INIT_ENERGIES = data["INIT_ENERGIES"]# [18.94, 18.95, 19, 19, 18.94, 18.95],  [19, 18.94]
+    INIT_ENERGIES = data["INIT_ENERGIES"]# [18.94, 18.95, 19, 19, 18.94, 18.95],  [19, 18.94]  [18.998, 18.99, 18.997]
     if (len(INIT_ENERGIES) == 0):
         INIT_ENERGIES = [BATTERY_CAPACITY for i in range(N)]
         
@@ -50,6 +52,7 @@ def main():
     SOLVER = data["SOLVER"]
 
     w = World(
+        SEED,
         N, F, Di, 
         MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL,
         PLMODEL, SOLVER, BATTERY_CAPACITY, ROUTER, FREQUENCY, LARGE, Hb, Hm,
