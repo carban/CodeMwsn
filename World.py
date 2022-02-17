@@ -7,7 +7,7 @@ from PPL import PPL
 
 class World(object):
     """docstring for world"""
-    def __init__(self, seed, n, F, Di, MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL, PLMODEL, SOLVER, BATTERY_CAPACITY, router, frequency, large, Hb, Hm, show_annotations, sleepInterval, initEnergies, animation):
+    def __init__(self, seed, n, F, Di, MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL, EC_VALUE, MAX_DIST, SCALED_COST, PLMODEL, SOLVER, BATTERY_CAPACITY, router, frequency, large, Hb, Hm, static_nodes, show_annotations, sleepInterval, initEnergies, animation):
         
         super(World, self).__init__()
 
@@ -29,8 +29,9 @@ class World(object):
 
         # diameter of the circle | CHECK THE OTHER PLACES WHERE WITH AND NORM APPEARS
         # VALIDATE THIS, THE USER CANNOT PUT A NUMBER BIGGER THAN THE NUMBER
-        # self.WIDTH = self.ppl.get_max_dist() * 2
-        self.WIDTH = 55 * 2
+        pplMaxDist = self.ppl.get_max_dist()
+        self.WIDTH = MAX_DIST*2 if MAX_DIST > 10 and MAX_DIST <= pplMaxDist else pplMaxDist*2
+        # self.WIDTH = 55 * 2
         self.HEIGHT = self.WIDTH
 
         self.MAX_SPEED = MAX_SPEED
@@ -45,6 +46,7 @@ class World(object):
 
         self.initEnergies = initEnergies
 
+        self.animation = animation
         self.show_annotations = show_annotations
         self.annotation_list = []
 
@@ -54,7 +56,11 @@ class World(object):
 
         self.counter = 0
 
-        self.animation = animation
+        self.static_nodes = static_nodes
+
+        self.EC_VALUE = EC_VALUE
+
+        self.factor = SCALED_COST 
 
         # ####################################################
 
@@ -102,9 +108,9 @@ class World(object):
         self.S = initS
 
         # Initial MWSNs model -----------------------------------------------------------------
-        self.factor = 10; 
+        
         maxcost = self.ppl.power_cost_w_given_d(self.norm/1000) * self.factor
-        self.obj = Mwsn(1, F, n, Di, [], [], maxcost, self.TIME_SLOT_VAL, self.BATTERY_CAPACITY, self.SOLVER)
+        self.obj = Mwsn(1, F, n, Di, [], [], maxcost, self.TIME_SLOT_VAL, self.EC_VALUE, self.BATTERY_CAPACITY, self.SOLVER)
         self.ani = {}
         self.sc = {} # just for animation
 
@@ -206,25 +212,29 @@ class World(object):
         # updating positions and targets RWP approach 
         for i in range(n):
             # self.ax.plot(self.tar_x[i], self.tar_y[i], marker="o", c='r')
-            # update positions
-            # si la pendiente no esta muy inclinada
-            if (m[i] >= -5 and m[i] <= 5):
-                # incrementa x
-                nx[i] = getx[i] + self.speed[i] * (dx[i]/abs(dx[i])) # this formula returns 1 if dx[i] >= 0 else -1 
-                # calcula y
-                ny[i] = (dy[i]/dx[i])*nx[i] - (dy[i]/dx[i])*getx[i] + gety[i]
+
+            if(not self.static_nodes):
+
+                # update positions
+                # si la pendiente no esta muy inclinada
+                if (m[i] >= -5 and m[i] <= 5):
+                    # incrementa x
+                    nx[i] = getx[i] + self.speed[i] * (dx[i]/abs(dx[i])) # this formula returns 1 if dx[i] >= 0 else -1 
+                    # calcula y
+                    ny[i] = (dy[i]/dx[i])*nx[i] - (dy[i]/dx[i])*getx[i] + gety[i]
+                else:
+                    # incrementa y
+                    ny[i] = gety[i] + self.speed[i] * (dy[i]/abs(dy[i])) # this formula returns 1 if dy[i] >= 0 else -1 
+                    # calcula x
+                    nx[i] = (dx[i]/dy[i])*ny[i] - (dx[i]/dy[i])*gety[i] + getx[i]
+
+                # assign new positions
+                x[i] = nx[i]
+                y[i] = ny[i]
+            
             else:
-                # incrementa y
-                ny[i] = gety[i] + self.speed[i] * (dy[i]/abs(dy[i])) # this formula returns 1 if dy[i] >= 0 else -1 
-                # calcula x
-                nx[i] = (dx[i]/dy[i])*ny[i] - (dx[i]/dy[i])*gety[i] + getx[i]
-
-            # assign new positions
-            # x[i] = nx[i]
-            # y[i] = ny[i]
-
-            x[i] = getx[i]
-            y[i] = gety[i]
+                x[i] = getx[i]
+                y[i] = gety[i]
 
             # update annotations
             if (self.show_annotations):

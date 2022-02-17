@@ -19,12 +19,14 @@ def main():
     MAX_SPEED = data["MAX_SPEED"]
     MIN_SPEED = data["MIN_SPEED"]
 
-    LOW_VALUE = data["LOW_VALUE"]
+    LOW_VALUE = 0.001
     DEATH_LIMIT = data["DEATH_LIMIT"]
 
     TIME_SLOT_VAL = data["TIME_SLOT_VAL"] 
 
-    ANIMATION = data["ANIMATION"]
+    ANIMATION = data["SHOW_ANIMATION"]
+
+    STATIC_NODES = data["STATIC_NODES"]
         
     SHOW_ANNOTATIONS = data["SHOW_ANNOTATIONS"]
 
@@ -47,6 +49,12 @@ def main():
     Hb = data["Hb"]
     Hm = data["Hm"]
 
+    EC_VALUE = data["EC_VALUE"]
+
+    MAX_DIST = data["MAX_DIST"]
+
+    SCALED_COST = data["SCALED_COST"]
+
     PLMODEL = data["PLMODEL"]
 
     SOLVER = data["SOLVER"]
@@ -54,9 +62,9 @@ def main():
     w = World(
         SEED,
         N, F, Di, 
-        MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL,
-        PLMODEL, SOLVER, BATTERY_CAPACITY, ROUTER, FREQUENCY, LARGE, Hb, Hm,
-        SHOW_ANNOTATIONS, SLEEP_INTERVAL, INIT_ENERGIES, ANIMATION)
+        MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL, EC_VALUE, MAX_DIST,
+        SCALED_COST, PLMODEL, SOLVER, BATTERY_CAPACITY, ROUTER, FREQUENCY, LARGE, Hb, Hm,
+        STATIC_NODES, SHOW_ANNOTATIONS, SLEEP_INTERVAL, INIT_ENERGIES, ANIMATION)
 
     print(" ||||||||||||||||||||| START |||||||||||||||||||||")
 

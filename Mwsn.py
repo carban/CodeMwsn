@@ -7,7 +7,7 @@ from scipy.interpolate import InterpolatedUnivariateSpline
 
 
 class Mwsn:
-    def __init__(self, K, F, N, Di, bi, ci, maxcost, time_slot_val, battery, solver):
+    def __init__(self, K, F, N, Di, bi, ci, maxcost, time_slot_val, EC, battery, solver):
 
         self.path_minizinc = "/home/carban/PortableApps/MiniZincIDE-2.4.3-bundle-linux-x86_64/bin/minizinc"
         self.path_model = "/home/carban/Documents/TG/CodeMwsn/CPM/Model6.mzn"
@@ -22,6 +22,7 @@ class Mwsn:
         self.time_slot_val = time_slot_val
         self.battery = battery
         self.cf = []
+        self.EC = EC
         self.solver = solver
 
         self.S = np.ones((F+1, N))
@@ -69,8 +70,11 @@ class Mwsn:
                 else:
                     # print"(dsfsdfsfsd", self.X_bef[j])
                     # print("***********", self.S[j][k], self.S[j+1][k])
-                    # C[j][k] = (self.S[j][k]-self.S[j+1][k])
-                    C[j][k] = self.maxcost
+                    if(self.EC):
+                        C[j][k] = self.maxcost
+                    else:
+                        C[j][k] = (self.S[j][k]-self.S[j+1][k])
+                    
 
         # for i in range(self.F):
         #     C[i] = (self.S[i]-self.S[i+1])/(self.X_bef[i]*self.time_slot_val)
