@@ -131,7 +131,7 @@ class Mwsn:
 
 
             except Exception as e:
-                print(e)
+                # print(e)
                 # print(outs, error)
                 print("---unsat---")
                 m = self.N if self.Di >= self.N else self.Di 
