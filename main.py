@@ -16,6 +16,8 @@ def main():
     F = data["F"]
     Di = data["Di"]
 
+    CONSTRAINT_V1 = data["CONSTRAINT_V1"]
+
     MAX_SPEED = data["MAX_SPEED"]
     MIN_SPEED = data["MIN_SPEED"]
 
@@ -49,6 +51,8 @@ def main():
     Hb = data["Hb"]
     Hm = data["Hm"]
 
+    EXTRA = data["EXTRAPOLATION"]
+
     EC_VALUE = data["EC_VALUE"]
 
     MAX_DIST = data["MAX_DIST"]
@@ -61,10 +65,10 @@ def main():
 
     w = World(
         SEED,
-        N, F, Di, 
+        N, F, Di, CONSTRAINT_V1,
         MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL, EC_VALUE, MAX_DIST,
         SCALED_COST, PLMODEL, SOLVER, BATTERY_CAPACITY, ROUTER, FREQUENCY, LARGE, Hb, Hm,
-        STATIC_NODES, SHOW_ANNOTATIONS, SLEEP_INTERVAL, INIT_ENERGIES, ANIMATION)
+        STATIC_NODES, SHOW_ANNOTATIONS, SLEEP_INTERVAL, INIT_ENERGIES, ANIMATION, EXTRA)
 
     print(" ||||||||||||||||||||| START |||||||||||||||||||||")
 

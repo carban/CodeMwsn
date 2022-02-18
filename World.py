@@ -7,7 +7,7 @@ from PPL import PPL
 
 class World(object):
     """docstring for world"""
-    def __init__(self, seed, n, F, Di, MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL, EC_VALUE, MAX_DIST, SCALED_COST, PLMODEL, SOLVER, BATTERY_CAPACITY, router, frequency, large, Hb, Hm, static_nodes, show_annotations, sleepInterval, initEnergies, animation):
+    def __init__(self, seed, n, F, Di, CONSTRAINT_V1, MAX_SPEED, MIN_SPEED, LOW_VALUE, DEATH_LIMIT, TIME_SLOT_VAL, EC_VALUE, MAX_DIST, SCALED_COST, PLMODEL, SOLVER, BATTERY_CAPACITY, router, frequency, large, Hb, Hm, static_nodes, show_annotations, sleepInterval, initEnergies, animation, extra):
         
         super(World, self).__init__()
 
@@ -62,6 +62,10 @@ class World(object):
 
         self.factor = SCALED_COST 
 
+        self.extra = extra
+
+        self.CONSTRAINT_V1 = CONSTRAINT_V1
+
         # ####################################################
 
         self.station = [self.WIDTH / 2, self.HEIGHT / 2]
@@ -110,7 +114,7 @@ class World(object):
         # Initial MWSNs model -----------------------------------------------------------------
         
         maxcost = self.ppl.power_cost_w_given_d(self.norm/1000) * self.factor
-        self.obj = Mwsn(1, F, n, Di, [], [], maxcost, self.TIME_SLOT_VAL, self.EC_VALUE, self.BATTERY_CAPACITY, self.SOLVER)
+        self.obj = Mwsn(1, F, n, Di, self.CONSTRAINT_V1, [], [], maxcost, self.TIME_SLOT_VAL, self.EC_VALUE, self.BATTERY_CAPACITY, self.SOLVER, self.extra)
         self.ani = {}
         self.sc = {} # just for animation
 

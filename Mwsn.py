@@ -7,7 +7,7 @@ from scipy.interpolate import InterpolatedUnivariateSpline
 
 
 class Mwsn:
-    def __init__(self, K, F, N, Di, bi, ci, maxcost, time_slot_val, EC, battery, solver):
+    def __init__(self, K, F, N, Di, cv1, bi, ci, maxcost, time_slot_val, EC, battery, solver, extra):
 
         self.path_minizinc = "/home/carban/PortableApps/MiniZincIDE-2.4.3-bundle-linux-x86_64/bin/minizinc"
         self.path_model = "/home/carban/Documents/TG/CodeMwsn/CPM/Model6.mzn"
@@ -24,6 +24,15 @@ class Mwsn:
         self.cf = []
         self.EC = EC
         self.solver = solver
+        self.extra = extra
+
+        self.cv1 = cv1
+        if(self.cv1):
+            self.cv1_val = self.N
+        else:
+            self.cv1_val = 1
+
+        print("34343", self.cv1, self.cv1_val)
 
         self.S = np.ones((F+1, N))
         # self.S[0] = bi
@@ -86,62 +95,8 @@ class Mwsn:
 
         # Extrapolation ||||||||||||||||||||||
 
-        if(False):
-            Fext = self.F * 2
-            xi = np.array([i/10 for i in range(1, self.F+1)])
-            exc = np.array(self.ci)
-
-            order = 2
-            # continous_x = np.linspace(0, Fext/10, 30)
-
-            for i in range(self.N):
-
-                column = exc[:,i]
-
-                # count how many real cost are there
-                vali = column != self.maxcost
-                print("valiii", vali)
-                hmc = sum(vali)
-                print("++++++>>>", hmc)
-
-                if(hmc == 0 or hmc == 1):
-                    exc[:,i] = column
-                else:
-                    if(hmc == 2):
-                        order = 1
-                    elif(hmc > 2):
-                        order = 2
-
-                    # vector sol with the max values
-                    sol = [self.maxcost if not vali[j] else -1 for j in range(self.F)]
-                    print("sol", sol)
-
-                    # vector for extrapolation
-                    extra = np.array([])
-                    for j in range(self.F):
-                        if (vali[j]):
-                            extra = np.append(extra, column[j])
-                    print("extra", extra)
-
-                    xi = [i/10 for i in range(1, len(extra)+1)]
-                    print("xi", xi)
-                    s = InterpolatedUnivariateSpline(xi, extra, k=order)
-                    y = abs(s([i/10 for i in range(hmc+1, (hmc*2)+1)]))
-
-                    ww = 0
-                    for j in range(self.F):
-                        if (vali[j]):
-                            sol[j] = y[ww]
-                            ww += 1
-
-                    exc[:,i] = sol
-                print("column", i, "extrapolated", exc[:, i])
-
-            print("exc ======>", exc)
-            
-            self.ci = exc.reshape(self.F, self.N)
-            self.ci = [self.ci[i].tolist() for i in range(self.F)]
-            print("Costs EXTRAPOLATE", self.ci)     
+        if(self.extra):
+            self.runExtra()
 
         # End Extrapolation ||||||||||||||||||||||
 
@@ -156,7 +111,8 @@ class Mwsn:
                         "-D", "b="+str(self.bi), 
                         "-D", "c="+str(self.ci[j]),
                         "-D", "time_slot_val="+str(self.time_slot_val),
-                        "-D", "battery="+str(self.battery)
+                        "-D", "battery="+str(self.battery),
+                        "-D", "cv="+str(self.cv1_val)
                     ]
                 
                 # print("ci[j]", self.ci[j])
@@ -224,3 +180,60 @@ class Mwsn:
 
             #     *** SEND SCHEDULE ***          SendTimeFrequencyToAllNodes()           *** SEND SCHEDULE ***
             return self.X
+
+    def runExtra(self):
+        Fext = self.F * 2
+        xi = np.array([i/10 for i in range(1, self.F+1)])
+        exc = np.array(self.ci)
+
+        # order = 3
+        # continous_x = np.linspace(0, Fext/10, 30)
+
+        for i in range(self.N):
+
+            column = exc[:,i]
+
+            # count how many real cost are there
+            vali = column != self.maxcost
+            # print("valiii", vali)
+            hmc = sum(vali)
+            # print("++++++>>>", hmc)
+
+            if(hmc == 0 or hmc == 1):
+                exc[:,i] = column
+            else:
+                if(hmc == 2):
+                    order = 1
+                elif(hmc > 2):
+                    order = 2
+
+                # vector sol with the max values
+                sol = [self.maxcost if not vali[j] else -1 for j in range(self.F)]
+                # print("sol", sol)
+
+                # vector for extrapolation
+                extra = np.array([])
+                for j in range(self.F):
+                    if (vali[j]):
+                        extra = np.append(extra, column[j])
+                # print("extra", extra)
+
+                xi = [i/10 for i in range(1, len(extra)+1)]
+                # print("xi", xi)
+                s = InterpolatedUnivariateSpline(xi, extra, k=order)
+                y = abs(s([i/10 for i in range(hmc+1, (hmc*2)+1)]))
+
+                ww = 0
+                for j in range(self.F):
+                    if (vali[j]):
+                        sol[j] = y[ww]
+                        ww += 1
+
+                exc[:,i] = sol
+            # print("column", i, "extrapolated", exc[:, i])
+
+        # print("exc ======>", exc)
+            
+        self.ci = exc.reshape(self.F, self.N)
+        self.ci = [self.ci[i].tolist() for i in range(self.F)]
+        print("Costs EXTRAPOLATE", self.ci)     

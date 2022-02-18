@@ -3,6 +3,7 @@
     "N": 10,
     "F": 1,
     "Di": 15,
+    "CONSTRAINT_V1": true, 
     "MAX_SPEED": 0.6,
     "MIN_SPEED": 0.2,
     "DEATH_LIMIT": 99.9,
@@ -11,6 +12,7 @@
     "SHOW_ANIMATION": false,
     "SHOW_ANNOTATIONS": false,
     "SLEEP_INTERVAL": 5,
+    "EXTRAPOLATION": false,
     "BATTERY_CAPACITY": 19,
     "INIT_ENERGIES": [],
     "ROUTER": {
