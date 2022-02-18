@@ -3,7 +3,7 @@
     "N": 10,
     "F": 1,
     "Di": 15,
-    "CONSTRAINT_V1": true, 
+    "CONSTRAINT_V1": false, 
     "MAX_SPEED": 0.6,
     "MIN_SPEED": 0.2,
     "DEATH_LIMIT": 99.9,

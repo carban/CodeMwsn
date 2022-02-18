@@ -10,7 +10,7 @@ class Mwsn:
     def __init__(self, K, F, N, Di, cv1, bi, ci, maxcost, time_slot_val, EC, battery, solver, extra):
 
         self.path_minizinc = "/home/carban/PortableApps/MiniZincIDE-2.4.3-bundle-linux-x86_64/bin/minizinc"
-        self.path_model = "/home/carban/Documents/TG/CodeMwsn/CPM/Model6.mzn"
+        self.path_model = "/home/carban/Documents/TG/CodeMwsn/Model.mzn"
         
         self.K = K
         self.F = F
