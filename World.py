@@ -11,8 +11,6 @@ class World(object):
         
         super(World, self).__init__()
 
-        # print(initEnergies)
-
         np.random.seed(seed)
 
         # ####################################################
@@ -27,11 +25,9 @@ class World(object):
         self.PLMODEL = PLMODEL
         self.SOLVER = SOLVER
 
-        # diameter of the circle | CHECK THE OTHER PLACES WHERE WITH AND NORM APPEARS
-        # VALIDATE THIS, THE USER CANNOT PUT A NUMBER BIGGER THAN THE NUMBER
         pplMaxDist = self.ppl.get_max_dist()
         self.WIDTH = MAX_DIST*2 if MAX_DIST > 10 and MAX_DIST <= pplMaxDist else pplMaxDist*2
-        # self.WIDTH = 55 * 2
+
         self.HEIGHT = self.WIDTH
 
         self.MAX_SPEED = MAX_SPEED
@@ -77,7 +73,6 @@ class World(object):
         self.annotation_list = []
         self.x = np.random.uniform(low=LOW_VALUE, high=self.WIDTH, size=(n,))
         # self.x = np.array([10 for i in range(self.n)])
-        # self.y = np.random.randint(low=LOW_VALUE, high=100, size=(n,))
         # self.y = np.array([50, 60])
         self.y = np.array([self.get_posy_givenx(x) for x in self.x])
 
@@ -85,7 +80,6 @@ class World(object):
 
         self.tar_x = np.random.uniform(low=LOW_VALUE, high=self.WIDTH, size=(n,))
         # self.tar_x = np.array([100 for i in range(self.n)])
-        # self.tar_y = np.random.randint(low=LOW_VALUE, high=HEIGHT, size=(n,))
         # self.tar_y = np.array([50, 60])
         self.tar_y = np.array([self.get_posy_givenx(x) for x in self.tar_x])
 
@@ -253,7 +247,6 @@ class World(object):
             # print("dist ==>", i, self.distances[i])
             # print("cost ==>", self.costs[i])
              
-
             # update target
             if ((self.tar_x[i] - x[i] >= -1 and self.tar_x[i] - x[i] <= 1) or 
                 (self.tar_y[i] - y[i] >= -1 and self.tar_y[i] - y[i] <= 1)):
@@ -277,14 +270,9 @@ class World(object):
 
         # send costs to solver method *************************************
         # fullcost = (self.costs*self.MX[f]*self.TIME_SLOT_VAL)
-        self.S[f+1] = self.S[f]-(self.costs*self.MX[f]*self.TIME_SLOT_VAL)  # self.S[f]-(self.costs*self.MX[f]) / Di
+        self.S[f+1] = self.S[f]-(self.costs*self.MX[f]*self.TIME_SLOT_VAL)
         # print(self.S[f+1])
         self.costs_packet[f] = self.costs
-        # ccc = (fullcost/3.8)*1000
-        # print("*******")
-        # for i in range(len(ccc)):
-        #     print("Node ", i, 5000/ccc[i])
-        # print("==>", self.costs*self.MX[f]*self.TIME_SLOT_VAL)
 
         # Check Umbral ----------------------
         for i in range(n):
@@ -300,7 +288,7 @@ class World(object):
 
         if (f == F-1 and not self.isDeath):
 
-            # # SENDING RESIDUAL ENERGIES TO THE MAIN PROGRAM ************
+            # ************ SENDING RESIDUAL ENERGIES TO THE MAIN PROGRAM ************
             # print("REAL COSTS PACKET", costs_packet)
             # print("S", self.S)
 

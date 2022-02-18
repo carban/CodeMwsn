@@ -1,6 +1,6 @@
 % Parameters
-int: N; %3
-int: Di; %20
+int: N;
+int: Di;
 float: time_slot_val;
 float: battery;
 int: cv;
@@ -14,6 +14,7 @@ array[s] of float: c;
 
 % Variables
 array[s] of var t: x;
+array[s] of var set_bat: ReEn;
 
 % Constraints
 
@@ -27,21 +28,10 @@ constraint sum(x) >= cv /\ sum(x) <= Di;
 constraint forall(i in s where max(b) = b[i] /\ min(c) = c[i])(max(x) = x[i]);
 constraint forall(i in s where min(b) = b[i] /\ max(c) = c[i])(min(x) = x[i]);
 
-array[s] of var set_bat: ReEn;
 constraint ReEn = [b[i] - (c[i]*x[i]*time_slot_val) | i in s];
 
 % Objective Function
-% solve maximize min([b[i] - c[i]*x[i] | i in s]);
-% solve maximize min(ReEn);
+
 solve minimize max(ReEn);
 
 output(["[",show(x),",", show(ReEn),"]"]);
-
-% output[
-%     "X          = ", show(x), "\n",
-%     "c          = ", show(c), "\n",
-%     "Cost c*x   = ", show([c[i] * x[i] | i in s]), "\n",
-%     "Old Energy = ", show(b), "\n",
-%     "New Energy = ", show([b[i] - (c[i]*x[i])/Di | i in s]), "\n",
-%     "% loss     = ", show(100-(sum(ReEn)*100/sum(b)))
-% ]

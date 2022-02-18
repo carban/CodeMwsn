@@ -32,8 +32,6 @@ class Mwsn:
         else:
             self.cv1_val = 1
 
-        print("34343", self.cv1, self.cv1_val)
-
         self.S = np.ones((F+1, N))
         # self.S[0] = bi
 
@@ -77,8 +75,6 @@ class Mwsn:
                 if (self.X_bef[j][k] != 0):
                     C[j][k] = (self.S[j][k]-self.S[j+1][k])/(self.X_bef[j][k]*self.time_slot_val) # (Di * (S[j]-S[j+1]))/X[j]
                 else:
-                    # print"(dsfsdfsfsd", self.X_bef[j])
-                    # print("***********", self.S[j][k], self.S[j+1][k])
                     if(self.EC):
                         C[j][k] = self.maxcost
                     else:
@@ -100,94 +96,90 @@ class Mwsn:
 
         # End Extrapolation ||||||||||||||||||||||
 
-        for i in range(self.K):   
-            for j in range(self.F):
-                # ||||||||||||||||||||||||||||| MINIZINC MODEL |||||||||||||||||||||||||||||||||
-                command = [
-                        self.path_minizinc, 
-                        self.path_model, "--solver", self.solver, 
-                        "-D", "N="+str(self.N), 
-                        "-D", "Di="+str(self.Di), 
-                        "-D", "b="+str(self.bi), 
-                        "-D", "c="+str(self.ci[j]),
-                        "-D", "time_slot_val="+str(self.time_slot_val),
-                        "-D", "battery="+str(self.battery),
-                        "-D", "cv="+str(self.cv1_val)
-                    ]
-                
-                # print("ci[j]", self.ci[j])
-                # print(command)
-
-                try:
-                    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-                    output, error = process.communicate()
-                    outs = output.decode("utf-8").split("\n")
-                    # print(outs, error)
-
-                    s = json.loads(outs[0])
-                    self.X = np.append(self.X, s[0])
-                    self.bi = s[1]
+        for j in range(self.F):
+            # ||||||||||||||||||||||||||||| MINIZINC MODEL |||||||||||||||||||||||||||||||||
+            command = [
+                    self.path_minizinc, 
+                    self.path_model, "--solver", self.solver, 
+                    "-D", "N="+str(self.N), 
+                    "-D", "Di="+str(self.Di), 
+                    "-D", "b="+str(self.bi), 
+                    "-D", "c="+str(self.ci[j]),
+                    "-D", "time_slot_val="+str(self.time_slot_val),
+                    "-D", "battery="+str(self.battery),
+                    "-D", "cv="+str(self.cv1_val)
+                ]
             
-                    states = s[1]
-                    states = [round((s*100)/self.battery, 4) for s in states]
+            # print("ci[j]", self.ci[j])
+            # print(command)
 
-                    print(s[0], "\n", states)
-                    print("--------------------------------------------------------------------------------------------------")
+            try:
+                process = subprocess.Popen(command, stdout=subprocess.PIPE)
+                output, error = process.communicate()
+                outs = output.decode("utf-8").split("\n")
+                # print(outs, error)
 
+                s = json.loads(outs[0])
+                self.X = np.append(self.X, s[0])
+                self.bi = s[1]
+        
+                states = s[1]
+                states = [round((s*100)/self.battery, 4) for s in states]
 
-                except Exception as e:
-                    print(e)
-                    print(outs, error)
-                    print("---unsat---")
-                    m = self.N if self.Di >= self.N else self.Di 
-
-                    if (m == self.N):
-                        arr = np.ones(self.N)
-                    else:
-                        idx = np.argpartition(self.ci[j], m)
-                        print(idx)
-                        arr = np.array([0 for i in range(self.N)])
-                        for ele in idx[:m]:
-                            arr[ele] = 1
-                    
-                    self.X = np.append(self.X, arr)
-                    self.bi = self.bi-self.ci[j]*arr
-                    self.bi = self.bi.tolist()
-                    states = self.bi
-                    states = [round((s*100)/self.battery, 4) for s in states]
-
-                    print(arr, "\n", states)
-                    print("________________________________________________________________________________")
+                print(s[0], "\n", states)
+                print("--------------------------------------------------------------------------------------------------")
 
 
-                # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+            except Exception as e:
+                print(e)
+                # print(outs, error)
+                print("---unsat---")
+                m = self.N if self.Di >= self.N else self.Di 
 
-            # Amount of time slots computed -----------------------------------------------   
-            # print("X", self.X.reshape(self.F, self.N))
+                if (m == self.N):
+                    arr = np.ones(self.N)
+                else:
+                    idx = np.argpartition(self.ci[j], m)
+                    print(idx)
+                    arr = np.array([0 for i in range(self.N)])
+                    for ele in idx[:m]:
+                        arr[ele] = 1
+                
+                self.X = np.append(self.X, arr)
+                self.bi = self.bi-self.ci[j]*arr
+                self.bi = self.bi.tolist()
+                states = self.bi
+                states = [round((s*100)/self.battery, 4) for s in states]
 
-            self.X = self.X.reshape(self.F, self.N)
-            self.X_bef = self.X
-            # os.system('clear')
-            # print("X", self.X)
-            # print("bi", self.bi)
-            # print("ci", self.ci)
-            # print("cf", self.cf)
+                print(arr, "\n", states)
+                print("________________________________________________________________________________")
 
-            # print("------------------------------------------------------------------------------------------")
-            # formatedX = self.formatAssignment(self.X)
-            # for j in range(self.F):
-            #     print(j, formatedX[j])
 
-            #     *** SEND SCHEDULE ***          SendTimeFrequencyToAllNodes()           *** SEND SCHEDULE ***
-            return self.X
+            # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+        # Amount of time slots computed -----------------------------------------------   
+        # print("X", self.X.reshape(self.F, self.N))
+
+        self.X = self.X.reshape(self.F, self.N)
+        self.X_bef = self.X
+        # os.system('clear')
+        # print("X", self.X)
+        # print("bi", self.bi)
+        # print("ci", self.ci)
+        # print("cf", self.cf)
+
+        # print("------------------------------------------------------------------------------------------")
+        # formatedX = self.formatAssignment(self.X)
+        # for j in range(self.F):
+        #     print(j, formatedX[j])
+
+        #     *** SEND SCHEDULE ***          SendTimeFrequencyToAllNodes()           *** SEND SCHEDULE ***
+        return self.X
 
     def runExtra(self):
         Fext = self.F * 2
         xi = np.array([i/10 for i in range(1, self.F+1)])
         exc = np.array(self.ci)
-
-        # order = 3
-        # continous_x = np.linspace(0, Fext/10, 30)
 
         for i in range(self.N):
 
@@ -230,10 +222,10 @@ class Mwsn:
                         ww += 1
 
                 exc[:,i] = sol
-            # print("column", i, "extrapolated", exc[:, i])
+            print("column", i, "extrapolated:", exc[:, i])
 
         # print("exc ======>", exc)
             
         self.ci = exc.reshape(self.F, self.N)
         self.ci = [self.ci[i].tolist() for i in range(self.F)]
-        print("Costs EXTRAPOLATE", self.ci)     
+        # print("Costs EXTRAPOLATE", self.ci)     

@@ -20,10 +20,6 @@ class PPL():
 
 	# OKUMURA TYPICAL URBAN PATHLOSS
 	# HATA
-	# Low level = 1500 OKUMURA
-	# I use 2400 because YOLO
-	# Low level = 1920 HATA
-	# I use 2400 because YOLO
 	def okumura_pl_db(self, d):
 
 		f = self.f
