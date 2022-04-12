@@ -79,8 +79,8 @@ def main():
 
     PLMODEL = data["PLMODEL"]
 
-    if (PLMODEL not in ["cost231", "okumura", "free"]):
-        print("\n =====> Only select between 'cost231', 'okumura', 'free'\n")
+    if (PLMODEL not in ["extended", "cost231", "okumura", "free"]):
+        print("\n =====> Only select between 'extended', 'cost231', 'okumura', 'free'\n")
         assert(False)
 
     SOLVER = data["SOLVER"]
