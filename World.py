@@ -73,18 +73,18 @@ class World(object):
         self.annotation_list = []
         self.x = np.random.uniform(low=LOW_VALUE, high=self.WIDTH, size=(n,))
         # self.x = np.array([10 for i in range(self.n)])
-        # self.y = np.array([50, 60])
+        # self.y = np.array([145, 185])
         self.y = np.array([self.get_posy_givenx(x) for x in self.x])
 
         self.time_text = ""
 
         self.tar_x = np.random.uniform(low=LOW_VALUE, high=self.WIDTH, size=(n,))
-        # self.tar_x = np.array([100 for i in range(self.n)])
-        # self.tar_y = np.array([50, 60])
+        # self.tar_x = np.array([320 for i in range(self.n)])
+        # self.tar_y = np.array([145, 185])
         self.tar_y = np.array([self.get_posy_givenx(x) for x in self.tar_x])
 
         self.speed = np.random.uniform(MIN_SPEED, MAX_SPEED, n)
-        # self.speed = np.array([0.1 for i in range(self.n)])
+        # self.speed = np.array([0.4 for i in range(self.n)])
 
         self.distances = np.zeros(n)
         self.costs = np.zeros(n)
@@ -126,6 +126,7 @@ class World(object):
         print("  Total number of frames: ", length)
         print("  Optimization events:    ", length / self.F )
         print("  TS per frame:           ", round(np.mean([np.sum(f) for f in self.graphX]), 3))
+        print("  Scale Value:            ", self.factor)
         print("  Path loss model:        ", self.PLMODEL)
         print("  Solver:                 ", self.SOLVER)
 
@@ -250,7 +251,7 @@ class World(object):
             # update target
             if ((self.tar_x[i] - x[i] >= -1 and self.tar_x[i] - x[i] <= 1) or 
                 (self.tar_y[i] - y[i] >= -1 and self.tar_y[i] - y[i] <= 1)):
-
+            # if (self.tar_x[i] - x[i] <= 1):
                 # self.S = np.array([np.array([0 for u in range(self.n)]) for v in range(self.F+1)])
                 # update target position
                 self.tar_x[i] = np.random.uniform(low=self.LOW_VALUE, high=self.WIDTH)

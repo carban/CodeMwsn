@@ -1,11 +1,11 @@
 {
     "SEED": 42,
-    "N": 10,
-    "F": 1,
+    "N": 3,
+    "F": 15,
     "Di": 15,
     "CONSTRAINT_V1": true, 
-    "MAX_SPEED": 0.6,
-    "MIN_SPEED": 0.2,
+    "MAX_SPEED": 0.9,
+    "MIN_SPEED": 0.4,
     "DEATH_LIMIT": 99.9,
     "TIME_SLOT_VAL": 3.6111e-5,
     "STATIC_NODES": false,
@@ -14,20 +14,20 @@
     "SLEEP_INTERVAL": 5,
     "EXTRAPOLATION": false,
     "BATTERY_CAPACITY": 19,
-    "INIT_ENERGIES": [],
+    "INIT_ENERGIES": [18.99,19,18.996],
     "ROUTER": {
         "Po": 20,
         "Go": 2,
         "Gi": 2,
-        "Pr": -76
+        "Pr": -87
     },
     "FREQUENCY": 2400,
     "LARGE": false,
     "Hb": 30,
     "Hm": 1.5,
     "EC_VALUE": true,
-    "SCALED_COST": 100,
-    "MAX_DIST": 90,
+    "SCALED_COST": 1,
+    "MAX_DIST": 165,
     "PLMODEL": "extended",
     "SOLVER": "Gecode"
 }

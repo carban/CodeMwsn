@@ -53,14 +53,14 @@ class PPL():
 
 		# For large cities 
 		if (large):
-			Cm = 0 # Constant Offset in dB
+			Cm = 3 # Constant Offset in dB
 			if (f >= 150 and f <= 200):
 				CFH = 8.29 * (np.log10(1.54*Hm))**2 - 1.1 #8.9 and 11
 			elif (f >= 200): # <= 1500
 				CFH = 3.2 * (np.log10(11.75*Hm))**2 - 4.97
 		# For small and medium-sized cities 
 		else:
-			Cm = 3
+			Cm = 0
 			CFH = (1.1*np.log10(f)-0.7)*Hm - (1.56*np.log10(f)-0.8)
 
 		return 46.3 + 33.9*np.log10(f) - 13.82*np.log10(Hb) - CFH + (44.9-6.55*np.log10(Hb))*np.log10(d) + Cm
@@ -205,7 +205,7 @@ class PPL():
 		return maxpl, maxdist
 
 	def get_max_dist(self):
-		x = np.array([i/1000 for i in range(1, 1200)])
+		x = np.array([i/1000 for i in range(1, 3600)])
 
 		name = self.PLMODEL
 

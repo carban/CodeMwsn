@@ -32,7 +32,7 @@ def main():
     if (MAX_SPEED < MIN_SPEED):
         print("\n =====> Max speed must be bigger than Min speed\n")
         assert(False)
-    elif (MAX_SPEED <= 0 or MAX_SPEED > 0.6):
+    elif (MAX_SPEED <= 0 or MAX_SPEED > 0.9):
         print("\n =====> Max speed must be bigger than 0 and less than 0.6\n")
         assert(False)
     elif(MIN_SPEED <= 0 and MIN_SPEED > 0.4):             
@@ -76,6 +76,9 @@ def main():
         assert(False)     
 
     SCALED_COST = data["SCALED_COST"]
+    if (SCALED_COST <= 0):
+        print("\n =====> The scaled cost must be bigger than zero\n")
+        assert(False)   
 
     PLMODEL = data["PLMODEL"]
 
